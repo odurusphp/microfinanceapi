@@ -2,31 +2,29 @@
 /**
  * Created by PhpStorm.
  * User: oduru
- * Date: 11/2/2019
- * Time: 4:01 PM
+ * Date: 10/15/2019
+ * Time: 7:55 AM
  */
 
 class Products extends PostController
 {
+
     public function  add(){
 
         $rs = new RestApi();
 
-        $requiredfieldnames = ['name','price', 'color', 'weight','size','sku', 'shopifyid', 'saleprice',
-                               'categoryid', 'tagid', 'quantity', 'productaddons'];
+        $requiredfieldnames = ['name','categoryid', 'vendorid', 'quantity', 'description',
+                                'costprice', 'saleprice', 'code', 'userid'];
 
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $categoryid = isset($_POST['categoryid']) ? trim($_POST['categoryid']) : '';
-        $tags = isset($_POST['tagid']) ? trim($_POST['tagid']) : '';
+        $vendorid = isset($_POST['vendorid']) ? trim($_POST['vendorid']) : '';
         $quantity = isset($_POST['quantity']) ? trim($_POST['quantity']) : '';
-        $price = isset($_POST['price']) ? trim($_POST['price']) : '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $costprice = isset($_POST['costprice']) ? trim($_POST['costprice']) : '';
         $saleprice = isset($_POST['saleprice']) ? trim($_POST['saleprice']) : '';
-        $weight = isset($_POST['weight']) ? trim($_POST['weight']) : '';
-        $color = isset($_POST['color']) ? trim($_POST['color']) : '';
-        $size = isset($_POST['size']) ? trim($_POST['size']) : '';
-        $sku = isset($_POST['sku']) ? trim($_POST['sku']) : '';
-        $productaddons = isset($_POST['productaddons']) ? trim($_POST['productaddons']) : '';
-        $shopifyid = isset($_POST['shopifyid']) ? trim($_POST['shopifyid']) : '';
+        $code = isset($_POST['code']) ? trim($_POST['code']) : '';
+        $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
 
         $postfields = (array_keys($_POST));
 
@@ -42,31 +40,38 @@ class Products extends PostController
         //Verifying Token
         $rs->verifyToken($token);
 
+        //Verify Vendor ID
+        $vencount  =  Vendor::getVendorCountById($vendorid);
+        if($vencount == 0){
+            $rs->throwErrror('VN_03', VN_03, 'Vendor ID' );
+        }
 
         //Verify Category ID
-        $catcount = Categories::getCountById($categoryid);
-        if($catcount == 0){
+        $procount = Categories::getCategoryCountbyID($categoryid);
+        if($procount == 0){
             $rs->throwErrror('CAT_02', CAT_02, 'category ID');
         }
 
-        $pro = new ProductData();
+        $pro = new Product();
         $prodata =& $pro->recordObject;
-        $prodata->name = $name;
-        $prodata->categoryid = $categoryid;
+        $prodata->productname = $name;
+        $prodata->vid = $vendorid;
+        $prodata->catid = $categoryid;
         $prodata->quantity = $quantity;
-        $prodata->price = $price;
+        $prodata->description = $description;
+        $prodata->costprice = $costprice;
         $prodata->saleprice = $saleprice;
-        $prodata->sku = $sku;
-        $prodata->weight = $weight;
-        $prodata->color = $color;
-        $prodata->size = $size;
-        $prodata->shopifyid = $shopifyid;
-        $prodata->createdat = date('Y-m-d');
-        $prodata->publishedat = date('Y-m-d');
+        $prodata->productcode = $code;
+        $prodata->datesupplied = date('Y-m-d');
+        $prodata->userid = $userid;
         if($pro->store()){
-            $productid = $pro->recordObject->productid;
-            $this->producraddons($productaddons, $productid);
-            $this->producttags($tags, $productid);
+             $productid = $pro->recordObject->productid;
+             $usercount = User::companyUserCountByUid($userid);
+             if($usercount > 0){
+                 $cid = User::getCompanyIdFromCompanyUsers($userid);
+                 Product::insertCompanyProducts($cid, $productid);
+
+             }
             $data = ['message'=>'Product seccessfully  added', 'productid'=>$productid ];
             $rs->returnResponse($data);
 
@@ -74,56 +79,22 @@ class Products extends PostController
 
     }
 
-    private function producraddons($addonids, $productid){
-
-        if($addonids != '') {
-            $addondata = explode(',', $addonids);
-
-            foreach ($addondata as $id) {
-                $count = ProductData::getaddOnCountById($id);
-                if ($count == 0) {
-                    ProductData::insertProductsAddons($productid, $id);
-                }
-            }
-        }
-
-    }
-
-    private function producttags($tagid, $productid){
-
-        if($tagid != '') {
-            $addondata = explode(',', $tagid);
-
-            foreach ($addondata as $id) {
-                $count = ProductData::getTagCountById($id, $productid);
-                if ($count == 0) {
-                    ProductData::insertProductstags($productid, $id);
-                }
-            }
-        }
-
-    }
-
-
     public function  update($productid = null){
 
         $rs = new RestApi();
 
-        $requiredfieldnames = ['name','price', 'color', 'weight', 'color','size','sku', 'shopifyid', 'saleprice',
-            'categoryid', 'tagid', 'quantity', 'productaddons'];
+        $requiredfieldnames = ['name','categoryid', 'vendorid', 'quantity', 'description', 'costprice',
+                                'saleprice', 'code', 'userid'];
 
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $categoryid = isset($_POST['categoryid']) ? trim($_POST['categoryid']) : '';
-        $tagid = isset($_POST['tagid']) ? trim($_POST['tagid']) : '';
+        $vendorid = isset($_POST['vendorid']) ? trim($_POST['vendorid']) : '';
         $quantity = isset($_POST['quantity']) ? trim($_POST['quantity']) : '';
-        $price = isset($_POST['price']) ? trim($_POST['price']) : '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $costprice = isset($_POST['costprice']) ? trim($_POST['costprice']) : '';
         $saleprice = isset($_POST['saleprice']) ? trim($_POST['saleprice']) : '';
-        $weight = isset($_POST['weight']) ? trim($_POST['weight']) : '';
-        $color = isset($_POST['color']) ? trim($_POST['color']) : '';
-        $size = isset($_POST['size']) ? trim($_POST['size']) : '';
-        $sku = isset($_POST['sku']) ? trim($_POST['sku']) : '';
-        $productaddons = isset($_POST['productaddons']) ? trim($_POST['productaddons']) : '';
-        $shopifyid = isset($_POST['shopifyid']) ? trim($_POST['shopifyid']) : '';
+        $code = isset($_POST['code']) ? trim($_POST['code']) : '';
+        $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
 
         $postfields = (array_keys($_POST));
 
@@ -139,48 +110,47 @@ class Products extends PostController
         //Verifying Token
         $rs->verifyToken($token);
 
-        //Checking if product ID is  null
+        //Check if product ID is null
         if($productid == null){
-            $rs->throwErrror('PRO_02', PRO_02,  'Product ID');
+            $rs->throwErrror('PRO_02', PRO_02, 'Product ID' );
         }
 
-        //Verify Product ID
-        $procount  =  ProductData::getCountById($productid);
+        //Check if product ID is valid
+        $procount = Product::getProductCountById($productid);
         if($procount == 0){
             $rs->throwErrror('PRO_01', PRO_01, 'Product ID' );
         }
 
-
-
-        //Verify Category ID
-        $catcount = Categories::getCountById($categoryid);
-        if($catcount == 0){
-            $rs->throwErrror('CAT_03', CAT_03, 'category ID');
+        //Verify Vendor ID
+        $vencount  =  Vendor::getVendorCountById($vendorid);
+        if($vencount == 0){
+            $rs->throwErrror('VN_03', VN_03, 'Vendor ID' );
         }
 
-        $pro = new ProductData($productid);
+        //Verify Category ID
+        $procount = Categories::getCategoryCountbyID($categoryid);
+        if($procount == 0){
+            $rs->throwErrror('CAT_02', CAT_02, 'category ID');
+        }
+
+        $pro = new Product($productid);
         $prodata =& $pro->recordObject;
-        $prodata->name = $name;
-        $prodata->categoryid = $categoryid;
+        $prodata->productname = $name;
+        $prodata->vid = $vendorid;
+        $prodata->catid = $categoryid;
         $prodata->quantity = $quantity;
-        $prodata->price = $price;
+        $prodata->description = $description;
+        $prodata->datesupplied = date('Y-m-d');
+        $prodata->costprice = $costprice;
         $prodata->saleprice = $saleprice;
-        $prodata->sku = $sku;
-        $prodata->weight = $weight;
-        $prodata->color = $color;
-        $prodata->size = $size;
-        $prodata->shopifyid = $shopifyid;
-        $prodata->createdat = date('Y-m-d');
-        $prodata->publishedat = date('Y-m-d');
+        $prodata->productcode = $code;
+        $prodata->userid = $userid;
         if($pro->store()){
-            $productid = $pro->recordObject->productid;
-            $this->producraddons($productaddons, $productid);
-            $this->producttags($tagid, $productid);
-            $data = ['message'=>'Product seccessfully updated', 'productid'=>$productid ];
+            $prodata = $pro->recordObject;
+            $data = ['message'=>'Product successfuly updated', 'productdata'=>$prodata ];
             $rs->returnResponse($data);
 
         }
-
     }
 
 }

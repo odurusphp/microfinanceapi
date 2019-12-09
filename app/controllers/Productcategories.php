@@ -2,69 +2,96 @@
 /**
  * Created by PhpStorm.
  * User: oduru
- * Date: 10/29/2019
- * Time: 4:00 PM
+ * Date: 10/15/2019
+ * Time: 7:06 AM
  */
 
 class Productcategories extends Controller
 {
+     public function listall(){
+
+         $url = parse_url($_SERVER['REQUEST_URI']);
+
+         if(isset($url['query'])) {
+             parse_str($url['query'], $parameters);
+
+             $page = isset($parameters['page']) ? $parameters['page'] : 1;
+             $page = $page -1;
+             $limit = isset($parameters['limit']) ? $parameters['limit'] : 20  ;
+         }else{
+             $page = 0;
+             $limit = 20;
+         }
+
+         $rs = new RestApi();
+
+         // Verify Apikey
+         $rs->getApikey();
+
+         //Getting Authorization token
+         $token = $rs->getBearerToken();
+
+         //Verifying Token
+         $rs->verifyToken($token);
+
+         //APi Functionality
+
+         //Calling pagination class
+         $pag = Pagination::paginate();
+         $page = $pag['page'];
+         $limit = $pag['limit'];
+         $catdata = Categories::getCategoryData($page, $limit);
 
 
-    public function category($categoryid  = null){
+         $categorydata = [];
+         foreach($catdata  as $get){
+             $category = $get->category;
+             $catid = $get->catid;
 
-        $rs = new RestApi();
+             $productcount = Product::getProductCategoryCount($catid);
+             $categorydata [] = ['category'=>$category, 'catid'=>$catid, 'count'=>$productcount ];
+         }
 
-        // Verify Apikey
-        $rs->getApikey();
+         $datacount = Categories::getCategoryCount();
 
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
+         $data = ['categorydata'=>$categorydata, 'totalcount'=>$datacount];
+         $rs->returnResponse($data);
+     }
 
-        //Verifying Token
-        $rs->verifyToken($token);
 
-        //Checking if team ID is null;
-        if($categoryid== null){
-            $rs->throwErrror('CAT_02', CAT_02, 'Category ID');
-        }
+     public function details($catid = null){
 
-        //Check if user Id Exists;
-        $catcount = Categories::getCountById($categoryid);
-        if($catcount == 0) {
-            $rs->throwErrror('CAT_03', CAT_03, 'Category ID');
-        }
+         $rs = new RestApi();
 
-        //Getting the actual Api method
-        $tm = new CAtegories($categoryid);
-        $catdata  =  $tm->recordObject;
-        $rs->returnResponse($catdata);
-    }
+         //Checking if category ID is null;
+         if($catid == null){
+             $rs->throwErrror('CAT_01', CAT_01, 'category ID');
+         }
 
-    public function listall(){
+         //Checking if category ID exists;
+         $count = Categories::getCategoryCountbyID($catid);
+         if($count == 0){
+             $rs->throwErrror('CAT_02', CAT_02, 'category ID');
+         }
 
-        $rs = new RestApi();
 
-        // Verify Apikey
-        $rs->getApikey();
+         // Verify Apikey
+         $rs->getApikey();
 
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
+         //Getting Authorization token
+         $token = $rs->getBearerToken();
 
-        //Verifying Token
-        $rs->verifyToken($token);
+         //Verifying Token
+         $rs->verifyToken($token);
 
-        //Calling pagination class
-        $pag = Pagination::paginate();
-        $page = $pag['page'];
-        $limit = $pag['limit'];
+         //APi Functionality
 
-        //Getting the actual Api method
-        $catdata = Tagdata::getAllData($page, $limit);
+         $catdata = new Categories($catid);
+         $data = $catdata->recordObject;
+         $rs->returnResponse($data);
+     }
 
-        $rs->returnResponse($catdata);
-    }
-
-    public function delete($categoryid = null){
+    public function  delete($catid = null){
 
         $rs = new RestApi();
 
@@ -83,24 +110,30 @@ class Productcategories extends Controller
             $rs->throwErrror('REQUEST_METHOD_NOT_VALID', 'Request method not allowed', 'Request Method');
         }
 
-        //Checking if user ID is null;
-        if($categoryid == null){
-            $rs->throwErrror('CAT_02', CAT_02, 'Category id');
+
+        //Checking if category ID is null;
+        if($catid == null){
+            $rs->throwErrror('CAT_01', CAT_01, 'category ID');
         }
 
-        //Check if user Id Exists;
-        $catcount = Categories::getCountById($categoryid);
-        if($catcount == 0) {
-            $rs->throwErrror('CAT_02', CAT_02, 'Category id');
+        //Checking if category ID exists;
+        $count = Categories::getCategoryCountbyID($catid);
+        if($count == 0){
+            $rs->throwErrror('CAT_02', CAT_02, 'category ID');
         }
 
-        $us = new Categories($catcount);
+
+        //Getting the actual Api method
+
+        $us = new Categories($catid);
         $us->deleteFromDB();
 
-        $data= ['message'=>'Category successfully deleted', 'categoryid'=>$categoryid];
+        $data= ['message'=>'Caegory  successfully deleted', 'CategoryID'=>$catid];
         $rs->returnResponse($data);
-
-
     }
+
+
+
+
 
 }

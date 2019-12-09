@@ -39,13 +39,30 @@ class Login extends PostController
         }
 
         $uid = User::userIdByEmail($email);
-        $us = new User($uid);
-        $userdata = $us->recordObject;
 
 
         $roleid = User::getrolebyUserId($uid);
 
         $role = User::getRolebyRoleId($roleid);
+
+        if($role == 'Administrator'){
+            $us = new User($uid);
+            $firstname = $us->recordObject->firstname;
+            $lastname = $us->recordObject->lastname;
+            $email = $us->recordObject->email;
+            $userdata = ['firstname'=>$firstname, 'lastname'=>$lastname, 'uid'=>$uid, 'email'=>$email];
+        }else{
+             $comdata = User::getCompanyIdByUserId($uid);
+             $cid = $comdata->cmid;
+             $firstname = $comdata->firstname;
+             $lastname = $comdata->lastname;
+             $email = $comdata->email;
+
+             $cm = new Company($cid);
+             $companyname = $cm->recordObject->companyname;
+             $userdata = ['firstname'=>$firstname, 'lastname'=>$lastname, 'uid'=>$uid,
+                           'companyid'=>$cid, 'email'=>$email, 'companyname'=>$companyname];
+        }
 
         //Generate token
         $jwt = new JwtToken();

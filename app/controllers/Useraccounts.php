@@ -8,8 +8,96 @@
 
 class Useraccounts extends Controller
 {
-    public function userlist(){
+      public function userlist(){
 
+          $rs = new RestApi();
+
+          // Verify Apikey
+          $rs->getApikey();
+
+          //Getting Authorization token
+          $token = $rs->getBearerToken();
+
+          //Verifying Token
+          $rs->verifyToken($token);
+
+          //Getting the actual Api method
+          //Calling pagination class
+          $pag = Pagination::paginate();
+
+          $page = $pag['page'];
+          $limit = $pag['limit'];
+          $userdata = User::getUserData($page, $limit);
+          $usercount = User::getUserCount();
+
+          $alluserdata = [];
+
+          foreach($userdata as $get){
+
+              $userid  = $get->uid;
+              $lastname = $get->lastname;
+              $firstname = $get->firstname;
+              $email = $get->email;
+
+              $roleid  = User::getrolebyUserId($userid);
+
+              $alluserdata[] = ['firstname'=>$firstname, 'lastname'=>$lastname, 'email'=>$email,
+                                'userid'=>$userid,  'roleid'=>$roleid ];
+          }
+
+          $data = ['userdata'=>$alluserdata, 'totalcount'=>$usercount];
+
+          $rs->returnResponse($data);
+
+      }
+
+
+      public function user($userid = null)
+      {
+          $rs = new RestApi();
+
+          // Verify Apikey
+          $rs->getApikey();
+
+          //Getting Authorization token
+          $token = $rs->getBearerToken();
+
+          //Verifying Token
+          $rs->verifyToken($token);
+
+
+          //Checking if user ID is null;
+          if($userid == null){
+              $rs->throwErrror('USR_O8', USR_08, 'userid');
+          }
+
+          //Check if user Id Exists;
+          $usercount = User::getUserCountbyUserID($userid);
+          if($usercount == 0) {
+              $rs->throwErrror('USR_O7', USR_07, 'userid');
+          }
+
+          //Getting the actual Api method
+
+          $us = new User($userid);
+          $get= $us->recordObject;
+
+          //$userid  = $get->uid;
+          $lastname = $get->lastname;
+          $firstname = $get->firstname;
+          $email = $get->email;
+
+          $roleid  = User::getrolebyUserId($userid);
+
+          $alluserdata = ['firstname'=>$firstname, 'lastname'=>$lastname, 'email'=>$email,
+                           'userid'=>$userid,  'roleid'=>$roleid ];
+
+          $rs->returnResponse($alluserdata);
+
+      }
+
+
+    public function checklinkavailability($codedstring = null){
 
         $rs = new RestApi();
 
@@ -17,139 +105,31 @@ class Useraccounts extends Controller
         $rs->getApikey();
 
         //Getting Authorization token
-        $token = $rs->getBearerToken();
+        //$token = $rs->getBearerToken();
 
         //Verifying Token
-        $rs->verifyToken($token);
-
-        //Calling pagination class
-        $pag = Pagination::paginate();
-        $page = $pag['page'];
-        $limit = $pag['limit'];
-
-        //Getting the actual Api method
-        $userdata = User::getUserData($page, $limit);
-        $usercount = User::getUserCount();
-
-        $alluserdata = [];
-
-        foreach($userdata as $get){
-
-            $userid  = $get->uid;
-            $lastname = $get->lastname;
-            $firstname = $get->firstname;
-            $email = $get->email;
-
-            $basicdata = Basicinformation::getBasicInfoById($userid);
-            $telephone = $basicdata->telephone;
-
-            $roleid  = User::getrolebyUserId($userid);
-            $team = User::getTeamByUserid($userid);
-
-            $alluserdata[] = ['firstname'=>$firstname, 'lastname'=>$lastname, 'email'=>$email,
-                'userid'=>$userid,  'roleid'=>$roleid, 'telephone'=>$telephone, 'team'=>$team ];
-        }
-
-        $data = ['userdata'=>$alluserdata, 'totalcount'=>$usercount];
-
-        $rs->returnResponse($data);
-
-    }
-
-
-    public function search($parameter = null){
-
-
-        $rs = new RestApi();
-
-        // Verify Apikey
-        $rs->getApikey();
-
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
-
-        //Verifying Token
-        $rs->verifyToken($token);
-
-        //Calling pagination class
-        $pag = Pagination::paginate();
-        $page = $pag['page'];
-        $limit = $pag['limit'];
-
-        //Getting the actual Api method
-        $userdata = User::searchUserData($page, $limit, $parameter);
-        $usercount = User::searchUserDataCount($parameter);
-
-        $alluserdata = [];
-
-        foreach($userdata as $get){
-
-            $userid  = $get->uid;
-            $lastname = $get->lastname;
-            $firstname = $get->firstname;
-            $email = $get->email;
-
-            $basicdata = Basicinformation::getBasicInfoById($userid);
-            $telephone = $basicdata->telephone;
-
-            $roleid  = User::getrolebyUserId($userid);
-            $team = User::getTeamByUserid($userid);
-
-            $alluserdata[] = ['firstname'=>$firstname, 'lastname'=>$lastname, 'email'=>$email,
-                'userid'=>$userid,  'roleid'=>$roleid, 'telephone'=>$telephone, 'team'=>$team ];
-        }
-
-        $data = ['userdata'=>$alluserdata, 'totalcount'=>$usercount];
-
-        $rs->returnResponse($data);
-
-    }
-
-
-
-    public function user($userid = null)
-    {
-        $rs = new RestApi();
-
-        // Verify Apikey
-        $rs->getApikey();
-
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
-
-        //Verifying Token
-        $rs->verifyToken($token);
-
+        //$rs->verifyToken($token);
 
         //Checking if user ID is null;
-        if($userid == null){
+        if($codedstring == null){
             $rs->throwErrror('USR_O8', USR_08, 'userid');
         }
 
-        //Check if user Id Exists;
-        $usercount = User::getUserCountbyUserID($userid);
-        if($usercount == 0) {
-            $rs->throwErrror('USR_O7', USR_07, 'userid');
+
+        $userid = base64_decode($codedstring);
+
+        //check where link is expired
+        $count = User::checkexpiredStutus($userid);
+        if($count == 0){
+            $rs->throwErrror('USR_09', USR_09, 'userid');
         }
 
-        //Getting the actual Api method
+        //Api functionality
+        $data = ['userid'=>$userid];
 
-        $us = new User($userid);
-        $get= $us->recordObject;
-
-        //$userid  = $get->uid;
-        $lastname = $get->lastname;
-        $firstname = $get->firstname;
-        $email = $get->email;
-
-        $roleid  = User::getrolebyUserId($userid);
-
-        $alluserdata = ['firstname'=>$firstname, 'lastname'=>$lastname, 'email'=>$email,
-            'userid'=>$userid,  'roleid'=>$roleid ];
-
-        $rs->returnResponse($alluserdata);
-
+        $rs->returnResponse($data);
     }
+
 
     public function roles(){
 
@@ -169,7 +149,9 @@ class Useraccounts extends Controller
         $rs->returnResponse($roledata);
     }
 
-    public function  deleteuser($userid){
+
+
+    public function  deleteuser($userid = null ){
 
         $rs = new RestApi();
 
@@ -191,26 +173,83 @@ class Useraccounts extends Controller
 
         //Checking if user ID is null;
         if($userid == null){
-            $rs->throwErrror('USR_O8', USR_08, 'userid');
+            $rs->throwErrror('USR_08', USR_08, 'userid');
         }
 
         //Check if user Id Exists;
         $usercount = User::getUserCountbyUserID($userid);
         if($usercount == 0) {
-            $rs->throwErrror('USR_O7', USR_07, 'userid');
+            $rs->throwErrror('USR_07', USR_07, 'userid');
         }
 
-        // delete User from DB;
-
         $us = new User($userid);
-        $us->deleteFromDB();
+        $us->recordObject->status = 5;
+        if($us->store($userid)){
+            $data= ['message'=>'User successfully deleted', 'userid'=>$userid];
+            $rs->returnResponse($data);
+        }
 
-        // Add to deleted Users
-        User::deleterUsers($userid);
-        $data= ['message'=>'User successfully deleted', 'userid'=>$userid];
-        $rs->returnResponse($data);
+
 
     }
+
+
+    public function companyusers($companyid = null){
+
+        $url = parse_url($_SERVER['REQUEST_URI']);
+
+        if(isset($url['query'])) {
+            parse_str($url['query'], $parameters);
+
+            $page = isset($parameters['page']) ? $parameters['page'] : 1;
+            $page = $page -1;
+            $limit = isset($parameters['limit']) ? $parameters['limit'] : 20  ;
+        }else{
+            $page = 0;
+            $limit = 20;
+        }
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        //Checking if user ID is null;
+        if($companyid == null){
+            $rs->throwErrror('CM_O1', CM_01, 'company ID');
+        }
+
+        $companycount = Company::checkCompanyexists($companyid);
+
+        if($companycount == 0){
+            $rs->throwErrror('CM_02', CM_02, 'company ID');
+        }
+
+
+        $userdata = Company::getCompanyUsersbyID($companyid, $page, $limit);
+
+        $data = [];
+
+        foreach($userdata as $get){
+            $firstname  = $get->firstname;
+            $lastname  = $get->lastname;
+            $userid  = $get->uid;
+            $companyid = $get->cmid;
+            $roleid  = $get->roles_roleid;
+            $role = User::getRolebyRoleId($roleid);
+            $data[] = ['firstname'=>$firstname, 'lastname'=>$lastname, 'userid'=>$userid,
+                      'companyid'=>$companyid,  'role'=>$role ];
+        }
+        $rs->returnResponse($data);
+
+
+    }
+
 
 
 

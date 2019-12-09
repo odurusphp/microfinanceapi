@@ -8,80 +8,79 @@
 
 class Products extends Controller
 {
-    public function listall(){
+      public function listall(){
+
+          $rs = new RestApi();
+
+          // Verify Apikey
+          $rs->getApikey();
+
+          //Getting Authorization token
+          $token = $rs->getBearerToken();
+
+          //Verifying Token
+          $rs->verifyToken($token);
+
+          //Calling pagination class
+          $pag = Pagination::paginate();
+          $page = $pag['page'];
+          $limit = $pag['limit'];
+
+          //Getting the actual Api method
+          $productdata = Product::getProductData($page, $limit);
 
 
-        $rs = new RestApi();
-
-        // Verify Apikey
-        $rs->getApikey();
-
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
-
-        //Verifying Token
-        $rs->verifyToken($token);
-
-        //Calling pagination class
-        $pag = Pagination::paginate();
-        $page = $pag['page'];
-        $limit = $pag['limit'];
-
-        //Getting the actual Api method
-        $productdata = ProductData::getAllData($page, $limit);
+          //Get Product Count
+          $productcount = Product::getProductCount();
 
 
-        //Get Product Count
-        $productcount = ProductData::getTotalCount();
+          $prodata = [];
+
+          foreach($productdata as $pro){
+
+              $productname = $pro->productname;
+              $productid = $pro->productid;
+              $catid  = $pro->catid;
+              $vid = $pro->vid;
+              $quantity = $pro->quantity;
+              $datesupplied = $pro->datesupplied;
+              $saleprice = $pro->saleprice;
+              $costprice = $pro->costprice;
+              $description = $pro->description;
+              $code = $pro->productcode;
 
 
-        $prodata = [];
+              $vendorname = '';
+              $categoryname = '';
 
-        foreach($productdata as $pro){
 
-            $productname = $pro->name;
-            $quantity = @$pro->quantity;
-            $catid  = $pro->categoryid;
-            $createdat = $pro->createdat;
-            $saleprice = $pro->saleprice;
-            $price = $pro->price;
-            $publishedat  = $pro->publishedat;
-            $color  = $pro->createdat;
-            $weight  = $pro->weight;
-            $size  = $pro->size;
-            $sku = $pro->sku;
-            $shopifyid = $pro->shopifyid;
-            $productid = $pro->productid;
+              // Get Vendor Data
 
-            // Get Category Data
-            $cat = new Categories($catid);
-            $categoryname = $cat->recordObject->category;
+              $vencount = Vendor::getVendorCountById($vid);
+              if($vencount > 0){
+                  $ven = new Vendor($vid);
+                  $vendorname = isset($ven->recordObject->vendorname) ? $ven->recordObject->vendorname : '' ;
+              }
+              $catcount = Categories::getCategoryCountbyID($catid);
+              if($catcount > 0){
+                  // Get Category Data
+                  $cat = new Categories($catid);
+                  $categoryname = isset($cat->recordObject->category) ?  $cat->recordObject->category : '';
+              }
 
-            $addons = ProductData::getProductAddonsbyProductId($productid);
-            $addonsdata = [];
-            if(count($addons) > 0 ) {
-                foreach ($addons as $get) {
-                    $addonid = $get->adid;
-                    $ad = new Productaddons($addonid);
-                    $addonname = $ad->recordObject->addon;
-                    $addonsdata[] = ['addon' => $addonname, 'addid' => $addonid];
-                }
-            }
 
-            $tagdata = $this->getProductTage($productid);
 
-            $prodata[] = ['productname'=>$productname, 'quantity'=>$quantity, 'createdAt'=>$createdat,
-                'publishedat'=>$publishedat, 'category'=>$categoryname,
-                'productid'=>$productid, 'categoryid'=>$catid, 'saleprice'=>$saleprice,
-                'price'=>$price, 'weight'=>$weight , 'size'=>$size,'color'=>$color,'sku'=>$sku,
-                'shopifyid'=>$shopifyid, 'productaddons'=>$addonsdata , 'tagname'=>$tagdata];
-        }
 
-        $data = ['products'=>$prodata, 'totalcount'=>$productcount];
+              $prodata[] = ['productname'=>$productname, 'quantity'=>$quantity, 'datesupplied'=>$datesupplied,
+                  'vendor'=>$vendorname, 'category'=>$categoryname, 'productid'=>$productid,
+                  'vendorid'=>$vid, 'categoryid'=>$catid, 'saleprice'=>$saleprice, 'costprice'=>$costprice,
+                  'description'=>$description, 'code'=>$code];
+          }
 
-        $rs->returnResponse($data);
+          $data = ['products'=>$prodata, 'totalcount'=>$productcount];
 
-    }
+          $rs->returnResponse($data);
+      }
 
     public function details($productid = null)
     {
@@ -103,55 +102,259 @@ class Products extends Controller
         }
 
         //Check if product ID is valid
-        $procount = ProductData::getCountById($productid);
+        $procount = Product::getProductCountById($productid);
         if($procount == 0){
             $rs->throwErrror('PRO_01', PRO_01, 'Product ID' );
         }
 
         //Getting the actual Api method
-        $pro = new ProductData($productid);
-        $productname = $pro->recordObject->name;
+
+        $pro = new Product($productid);
+        $productname = $pro->recordObject->productname;
+        $datesupplied = $pro->recordObject->datesupplied;
         $quantity = $pro->recordObject->quantity;
-        $catid  = $pro->recordObject->categoryid;
-        $createdat = $pro->recordObject->createdat;
+        $catid  = $pro->recordObject->catid;
+        $vid = $pro->recordObject->vid;
+        $description = $pro->recordObject->description;
         $saleprice = $pro->recordObject->saleprice;
-        $price = $pro->recordObject->price;
-        $publishedat  = $pro->recordObject->publishedat;
-        $color  = $pro->recordObject->createdat;
-        $weight  = $pro->recordObject->weight;
-        $size  = $pro->recordObject->size;
-        $sku = $pro->recordObject->sku;
-        $shopifyid = $pro->recordObject->shopifyid;
+        $costprice = $pro->recordObject->costprice;
+        $productcode = $pro->recordObject->productcode;
 
-
-
+        // Get Vendor Data
+        $ven = new Vendor($vid);
+        $vendorname = $ven->recordObject->vendorname;
 
         // Get Category Data
         $cat = new Categories($catid);
         $categoryname = $cat->recordObject->category;
 
-        $addons = ProductData::getProductAddonsbyProductId($productid);
-        $addonsdata = [];
-        if(count($addons) > 0 ) {
-            foreach ($addons as $get) {
-                $addonid = $get->adid;
-                $ad = new Productaddons($addonid);
-                $addonname = $ad->recordObject->addon;
-                $addonsdata[] = ['addon' => $addonname, 'addid' => $addonid];
-            }
-        }
-
-        $tagdata = $this->getProductTage($productid);
-
-
-        $prodata = ['productname'=>$productname, 'quantity'=>$quantity, 'createdAt'=>$createdat,
-                     'publishedat'=>$publishedat,'tagname'=>$tagdata, 'category'=>$categoryname,
-                     'productid'=>$productid, 'categoryid'=>$catid, 'saleprice'=>$saleprice,
-                     'price'=>$price, 'weight'=>$weight , 'size'=>$size,'color'=>$color,
-                     'sku'=>$sku,  'shopifyid'=>$shopifyid, 'productaddons'=>$addonsdata ];
+        $prodata = ['productname'=>$productname, 'quantity'=>$quantity, 'datesupplied'=>$datesupplied,
+            'vendor'=>$vendorname, 'category'=>$categoryname, 'productid'=>$productid,
+            'vendorid'=>$vid, 'categoryid'=>$catid, 'saleprice'=>$saleprice, 'costprice'=>$costprice,
+            'description'=>$description, 'code'=>$productcode];
 
         $rs->returnResponse($prodata);
 
+    }
+
+
+
+    public function user($userid = null)
+    {
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+
+        //Checking if user ID is null;
+        if($userid == null){
+            $rs->throwErrror('USR_O8', USR_08, 'userid');
+        }
+
+        //Check if user Id Exists;
+        $usercount = User::getUserCountbyUserID($userid);
+        if($usercount == 0) {
+            $rs->throwErrror('USR_O7', USR_07, 'userid');
+        }
+
+        //Getting the actual Api method
+
+        $productdata = Product::getProductByUserID($userid);
+
+        $prodata = [];
+
+        foreach($productdata as $pro){
+
+            $productname = $pro->productname;
+            $productid = $pro->productid;
+            $catid  = $pro->catid;
+            $vid = $pro->vid;
+            $quantity = $pro->quantity;
+            $datesupplied = $pro->datesupplied;
+            $saleprice = $pro->saleprice;
+            $costprice = $pro->costprice;
+            $description = $pro->description;
+            $code = $pro->productcode;
+
+
+            $vendorname = '';
+            $categoryname = '';
+
+
+            // Get Vendor Data
+
+            $vencount = Vendor::getVendorCountById($vid);
+            if($vencount > 0){
+                $ven = new Vendor($vid);
+                $vendorname = isset($ven->recordObject->vendorname) ? $ven->recordObject->vendorname : '' ;
+            }
+            $catcount = Categories::getCategoryCountbyID($catid);
+            if($catcount > 0){
+                // Get Category Data
+                $cat = new Categories($catid);
+                $categoryname = isset($cat->recordObject->category) ?  $cat->recordObject->category : '';
+            }
+
+
+
+
+            $prodata[] = ['productname'=>$productname, 'quantity'=>$quantity, 'datesupplied'=>$datesupplied,
+                'vendor'=>$vendorname, 'category'=>$categoryname, 'productid'=>$productid,
+                'vendorid'=>$vid, 'categoryid'=>$catid, 'saleprice'=>$saleprice, 'costprice'=>$costprice,
+                'description'=>$description, 'code'=>$code];
+        }
+
+        $data = ['products'=>$prodata];
+
+        $rs->returnResponse($data);
+
+    }
+
+    public function code($productcode = null)
+    {
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+
+        //Check if product ID is null
+        if($productcode == null){
+            $rs->throwErrror('PRO_02', PRO_02, 'Product Code' );
+        }
+
+        //Check if product ID is valid
+        $procount = Product::getProductCodeCountById($productcode);
+        if($procount == 0){
+            $rs->throwErrror('PRO_05', PRO_05, 'Product Code' );
+        }
+
+        //Getting the actual Api method
+
+        $pro = Product::getProductByCode($productcode);
+        $productname = $pro->productname;
+        $datesupplied = $pro->datesupplied;
+        $quantity = $pro->quantity;
+        $catid  = $pro->catid;
+        $vid = $pro->vid;
+        $description = $pro->description;
+        $saleprice = $pro->saleprice;
+        $costprice = $pro->costprice;
+        $productcode = $pro->productcode;
+
+        // Get Vendor Data
+        $ven = new Vendor($vid);
+        $vendorname = $ven->recordObject->vendorname;
+
+        // Get Category Data
+        $cat = new Categories($catid);
+        $categoryname = $cat->recordObject->category;
+
+        $prodata = ['productname'=>$productname, 'quantity'=>$quantity, 'datesupplied'=>$datesupplied,
+            'vendor'=>$vendorname, 'category'=>$categoryname, 'productid'=>$productid,
+            'vendorid'=>$vid, 'categoryid'=>$catid, 'saleprice'=>$saleprice, 'costprice'=>$costprice,
+            'description'=>$description, 'code'=>$productcode];
+
+        $rs->returnResponse($prodata);
+
+    }
+
+
+    public function companyproducts($companyid = null){
+
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        //Calling pagination class
+        $pag = Pagination::paginate();
+        $page = $pag['page'];
+        $limit = $pag['limit'];
+
+        //Checking if companyod is null;
+        if($companyid == null){
+            $rs->throwErrror('CM_O1', CM_01, 'company ID');
+        }
+        //Check if Company Id Exists;
+        $usercount = Company::checkCompanyexists($companyid);
+        if($usercount == 0) {
+            $rs->throwErrror('CM_02', CM_02, 'company ID');
+        }
+
+
+        //Getting the actual Api method
+        $productdata = Product::getCompanyProductData($companyid, $page, $limit);
+
+
+        //Get Product Count
+        $productcount = Product:: getCompanyProductCount($companyid);
+
+
+        $prodata = [];
+
+        foreach($productdata as $pro){
+
+            $productname = $pro->productname;
+            $productid = $pro->productid;
+            $catid  = $pro->catid;
+            $vid = $pro->vid;
+            $quantity = $pro->quantity;
+            $datesupplied = $pro->datesupplied;
+            $saleprice = $pro->saleprice;
+            $costprice = $pro->costprice;
+            $description = $pro->description;
+            $productcode = $pro->productcode;
+
+            $vendorname = '';
+            $categoryname = '';
+
+
+            // Get Vendor Data
+
+            $vencount = Vendor::getVendorCountById($vid);
+            if($vencount > 0){
+                $ven = new Vendor($vid);
+                $vendorname = isset($ven->recordObject->vendorname) ? $ven->recordObject->vendorname : '' ;
+            }
+            $catcount = Categories::getCategoryCountbyID($catid);
+            if($catcount > 0){
+                // Get Category Data
+                $cat = new Categories($catid);
+                $categoryname = isset($cat->recordObject->category) ?  $cat->recordObject->category : '';
+            }
+
+
+
+
+            $prodata[] = ['productname'=>$productname, 'quantity'=>$quantity, 'datesupplied'=>$datesupplied,
+                'vendor'=>$vendorname, 'category'=>$categoryname, 'productid'=>$productid,
+                'vendorid'=>$vid, 'categoryid'=>$catid, 'saleprice'=>$saleprice, 'costprice'=>$costprice,
+                'description'=>$description, 'code'=>$productcode];
+        }
+
+        $data = ['products'=>$prodata, 'totalcount'=>$productcount];
+
+        $rs->returnResponse($data);
     }
 
 
@@ -174,117 +377,29 @@ class Products extends Controller
             $rs->throwErrror('REQUEST_METHOD_NOT_VALID', 'Request method not allowed', 'Request Method');
         }
 
-
         //Check if product ID is null
         if($productid == null){
             $rs->throwErrror('PRO_02', PRO_02, 'Product ID' );
         }
 
         //Check if product ID is valid
-        $procount = ProductData::getCountById($productid);
+        $procount = Product::getProductCountById($productid);
         if($procount == 0){
             $rs->throwErrror('PRO_01', PRO_01, 'Product ID' );
         }
 
         //Getting the actual Api method
 
-        $us = new ProductData($productid);
+        $us = new Product($productid);
         $us->deleteFromDB();
+
+
+        //Delete company products id any
+        Product::deleteCompanyProducts($productid);
 
         $data= ['message'=>'Product successfully deleted', 'ProductID'=>$productid];
         $rs->returnResponse($data);
     }
-
-    public function search($parameter = null)
-    {
-        $rs = new RestApi();
-
-        // Verify Apikey
-        $rs->getApikey();
-
-        //Getting Authorization token
-        $token = $rs->getBearerToken();
-
-        //Verifying Token
-        $rs->verifyToken($token);
-
-        //Calling pagination class
-        $pag = Pagination::paginate();
-        $page = $pag['page'];
-        $limit = $pag['limit'];
-
-
-
-        //Getting the actual Api method
-        $productdata = ProductData::searhProduct($parameter, $page, $limit);
-        $productcount = ProductData::searhProductCount($parameter);
-
-        $prodata = [];
-
-        foreach($productdata as $pro){
-
-            $productname = $pro->name;
-            $quantity = @$pro->quantity;
-            $catid  = $pro->categoryid;
-            $createdat = $pro->createdat;
-            $saleprice = $pro->saleprice;
-            $price = $pro->price;
-            $publishedat  = $pro->publishedat;
-            $color  = $pro->createdat;
-            $weight  = $pro->weight;
-            $size  = $pro->size;
-            $sku = $pro->sku;
-            $shopifyid = $pro->shopifyid;
-            $productid = $pro->productid;
-
-
-
-            // Get Category Data
-            $cat = new Categories($catid);
-            $categoryname = $cat->recordObject->category;
-
-            $addons = ProductData::getProductAddonsbyProductId($productid);
-            $addonsdata = [];
-            if(count($addons) > 0 ) {
-                foreach ($addons as $get) {
-                    $addonid = $get->adid;
-                    $ad = new Productaddons($addonid);
-                    $addonname = $ad->recordObject->addon;
-                    $addonsdata[] = ['addon' => $addonname, 'addid' => $addonid];
-                }
-            }
-
-            $tagdata = $this->getProductTage($productid);
-
-            $prodata[] = ['productname'=>$productname, 'quantity'=>$quantity, 'createdAt'=>$createdat,
-                'publishedat'=>$publishedat,'tagname'=>$tagdata, 'category'=>$categoryname,
-                'productid'=>$productid, 'categoryid'=>$catid, 'saleprice'=>$saleprice,
-                'price'=>$price, 'weight'=>$weight , 'size'=>$size,'color'=>$color,
-                'sku'=>$sku,  'shopifyid'=>$shopifyid, 'productaddons'=>$addonsdata ];
-        }
-
-        $data = ['products'=>$prodata, 'totalcount'=>$productcount];
-
-        $rs->returnResponse($data);
-
-    }
-
-    private function getProductTage($productid){
-       $tags = ProductData::getTagsbyProductId($productid);
-       $tagdata = [];
-
-       foreach($tags as $get){
-           $tagid = $get->tagid;
-           $tg  = new Tagdata($tagid);
-           $tagname = $tg->recordObject->tagname;
-           $tagdata[] = ['tagname'=>$tagname, 'tagid'=>$tagid];
-       }
-
-       return $tagdata;
-    }
-
-
-
 
 
 }

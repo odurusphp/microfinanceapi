@@ -22,58 +22,45 @@ class User extends BaseUser
 
     }
 
-
     public static function passwordMD5($password){
         return md5($password);
     }
 
-    public static function checkUserCredentials($email, $password){
+    public static function getUserData($page, $limit){
         global $connectedDb;
-        $password = md5($password);
-        $query = "select count(*) as count from users where email  = '$email' and password = '$password' and status is null ";
+        $query = "select * from users  where status is null limit $page, $limit ";
         $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
+        return $connectedDb->resultSet();
+
     }
+
 
     public static function userIdByEmail($email){
         global $connectedDb;
         $query = "select uid from users where email  = '$email'  ";
-        $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
-    }
-
-    public static function getCountByUserId($userid){
-        global $connectedDb;
-        $query = "select count(*) as ct  from users where uid  = $userid  ";
         $uid = $connectedDb->prepare($query);
         $uid = $connectedDb->fetchColumn();
         return $uid;
     }
 
+    public static function checkUserCredentials($email, $password){
+        global $connectedDb;
+        $password = self::passwordMD5($password);
+        $query = "select count(*) as ct from users where email  = '$email' and password = '$password' and status is null ";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+
+    }
+
+
     public static function getUserCount(){
         global $connectedDb;
-        $query = "select count(*) as ct from users  ";
+        $query = "select count(*) as ct from users  where status is null ";
         $count = $connectedDb->prepare($query);
         $count = $connectedDb->fetchColumn();
         return $count;
     }
 
-
-    public static function getUserCountByEmail($email){
-        global $connectedDb;
-        $query = "select count(*) as ct from users where email  = '$email'  ";
-        $count = $connectedDb->prepare($query);
-        $count = $connectedDb->fetchColumn();
-        return $count;
-    }
-
-    public static function getUserByEmail($email){
-        global $connectedDb;
-        $query = "select * from users where email  = '$email'  ";
-        $connectedDb->prepare($query);
-        return $connectedDb->singleRecord();
-
-    }
 
     public static function getUserCountbyUserID($uid){
         global $connectedDb;
@@ -84,43 +71,30 @@ class User extends BaseUser
     }
 
 
-    public static function getrolebyUserId($uid){
+
+    public static function getUserCountByEmail($email){
+        global $connectedDb;
+        $query = "select count(*) as ct from users where email  = '$email'   ";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+
+    }
+
+
+    public static function getrolebyUserId($uid)
+    {
         global $connectedDb;
         $query = "select roles_roleid from user_roles  where  users_uid  = $uid  ";
-        $roleid = $connectedDb->prepare($query);
-        $roleid = $connectedDb->fetchColumn();
-        return $roleid;
-    }
-
-
-    public static function insertUserRoles($uid, $roleid){
-        global $connectedDb;
-        $query = "INSERT INTO user_roles (roles_roleid, users_uid) values ($roleid, $uid)  ";
         $connectedDb->prepare($query);
-        $connectedDb->execute();
+        return $connectedDb->fetchColumn();
     }
 
-    public static function updateUserRoles($uid, $roleid){
-        global $connectedDb;
-        $query = "UPDATE user_roles  SET  roles_roleid = $roleid where users_uid =  $uid  ";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
 
     public static function getRolebyRoleId($roleid){
         global $connectedDb;
         $query = "select role from roles  where  roleid = $roleid  ";
-        $roleid = $connectedDb->prepare($query);
-        $roleid = $connectedDb->fetchColumn();
-        return $roleid;
-    }
-
-    public static function getroleIdbyRole($role){
-        global $connectedDb;
-        $query = "select roleid from roles  where  role = '$role'  ";
-        $roleid = $connectedDb->prepare($query);
-        $roleid = $connectedDb->fetchColumn();
-        return $roleid;
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
     }
 
     public static function insertCustomerUser($uid, $cmid){
@@ -137,18 +111,14 @@ class User extends BaseUser
         return $connectedDb->fetchColumn();
     }
 
-    public static function getBasicUserId($uid){
+    public static function getCustomerUsers($cmid){
         global $connectedDb;
-        $query = "SELECT bid from user_basic where userid = $uid";
+        $query = "SELECT users.*, company_users.*, user_roles.* FROM users INNER JOIN company_users
+                  ON users.uid = company_users.users_uid  inner join  user_roles
+                  ON users.uid = user_roles.users_uid WHERE cmid = $cmid 
+                  ";
         $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
-    }
-
-    public static function getBusinessUserId($uid){
-        global $connectedDb;
-        $query = "SELECT busid from user_business where uid = $uid";
-        $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
+        return $connectedDb->resultSet();
     }
 
     public static function getSystemUsers(){
@@ -163,13 +133,6 @@ class User extends BaseUser
         global $connectedDb;
         $password  = MD5($password);
         $query = "UPDATE users SET password = '$password' where uid = '$uid'  ";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-    public static function updateUserStatus($userid, $status){
-        global $connectedDb;
-        $query = "UPDATE  user_reset_status SET status=$status where uid = $userid ";
         $connectedDb->prepare($query);
         $connectedDb->execute();
     }
@@ -190,32 +153,17 @@ class User extends BaseUser
 
     public static function  checkexpiredStutus($userid){
         global $connectedDb;
-        $query = "SELECT count(*) as count  from user_reset_status where uid = $userid and status = 2";
+        $query = "SELECT count(*) as count  from user_reset_status where uid = $userid and status = 1";
         $connectedDb->prepare($query);
         return $connectedDb->fetchColumn();
     }
 
 
-    public static function updatepasswordreset($userid, $status){
+    public static function updateUserStatus($userid, $status){
         global $connectedDb;
-        $query = "UPDATE  reset_password SET status=$status where uid = $userid ";
+        $query = "UPDATE  user_reset_status SET status=$status where uid = $userid ";
         $connectedDb->prepare($query);
         $connectedDb->execute();
-    }
-
-    public static function insertpasswordreset($userid, $status){
-        global $connectedDb;
-        $query = "INSERT INTO reset_password  (uid, status) values ($userid, $status)";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-
-    public static function getPasswordResetCount($userid){
-        global $connectedDb;
-        $query = "SELECT count(*) as ct from  reset_password where uid = $userid";
-        $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
     }
 
     public static function deleteCompanyUsers($uid, $cmid){
@@ -247,6 +195,14 @@ class User extends BaseUser
         return $connectedDb->fetchColumn();
     }
 
+    public static function companyUserCountByUid($uid){
+        global $connectedDb;
+        $query = "SELECT count(*) as ct from company_users where users_uid = $uid";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+    }
+
+
 
     public static function getSystemUsersCount(){
         global $connectedDb;
@@ -257,78 +213,13 @@ class User extends BaseUser
     }
 
 
-    public static function insertUserbasic($userid, $basicid){
-        global $connectedDb;
-        $query = "INSERT INTO  users_basic (uid, bid) values ($userid, $basicid)";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-    public static function getUserBaic($userid, $basicid){
-        global $connectedDb;
-        $query = "INSERT INTO  users_basic (uid, bid) values ($userid, $basicid)";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-
-    public static function insertUserRole($userid, $roleid){
-        global $connectedDb;
-        $query = "INSERT INTO  user_roles (users_uid, roles_roleid) values ($userid, $roleid)";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-
-    public static function insertTeamUsers($team, $uid){
-        global $connectedDb;
-        $query = "INSERT INTO  team_users (team, uid) values ('$team', $uid)";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-
-    public static function updateUserTeam($team, $uid){
-        global $connectedDb;
-        $query = "UPDATE  team_users set team = '$team' where uid = $uid";
-        $connectedDb->prepare($query);
-        $connectedDb->execute();
-    }
-
-
     public static function roleCount($role){
         global $connectedDb;
-        $query = "SELECT count(*) as ct from  roles where role = '$role' ";
+        $query = "SELECT count(*) as ct from roles where  role = '$role' ";
         $connectedDb->prepare($query);
         return $connectedDb->fetchColumn();
     }
 
-    public static function getUserData($page, $limit){
-        global $connectedDb;
-        $query = "select * from users where status is null limit $page, $limit ";
-        $connectedDb->prepare($query);
-        return $connectedDb->resultSet();
-
-    }
-
-    public static function searchUserData($page, $limit, $parameter){
-        global $connectedDb;
-        $query = "Select * from users where status is null and 
-                  (firstname like '$parameter%' OR lastname like '$parameter%' 
-                   OR email  like '$parameter%')
-                   limit $page, $limit";
-        $connectedDb->prepare($query);
-        return $connectedDb->resultSet();
-    }
-
-    public static function searchUserDataCount($parameter){
-        global $connectedDb;
-        $query = "Select count(*) as ct  from users where status is null and 
-                  (firstname like '$parameter%' OR  lastname like '$parameter%'
-                   OR email  like '$parameter%')";
-        $connectedDb->prepare($query);
-        return $connectedDb->fetchColumn();
-    }
 
     public static function getRoles(){
         global $connectedDb;
@@ -337,19 +228,68 @@ class User extends BaseUser
         return $connectedDb->resultSet();
     }
 
-    public static function getTeamByUserid($userid){
+    public static function getroleIdbyRole($role){
         global $connectedDb;
-        $query = "SELECT team  from team_users where uid = $userid ";
+        $query = "SELECT roleid from roles where  role = '$role' ";
         $connectedDb->prepare($query);
         return $connectedDb->fetchColumn();
     }
 
-    public static function deleterUsers($userid){
+    public static function insertUserRoles($userid, $roleid){
         global $connectedDb;
-        $today = date('Y-m-d H:i:s');
-        $query = "INSERT INTO deleted_users (userid, dateofdeletion) values ($userid, '$today') ";
+        $query = "INSERT INTO user_roles (users_uid, roles_roleid) values ($userid, $roleid) ";
         $connectedDb->prepare($query);
         $connectedDb->execute();
     }
+
+
+
+    public static function getCompanyUsers($page, $limit){
+        global $connectedDb;
+        $query = "SELECT company_users.*, users.* FROM company_users INNER JOIN users
+                  ON company_users.users_uid = users.uid WHERE STATUS IS NULL LIMIT $page, $limit";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
+
+    public static function getCompanyIdByUserId($uid){
+        global $connectedDb;
+        $query = "SELECT company_users.*, users.* FROM company_users INNER JOIN users
+                  ON company_users.users_uid = users.uid WHERE  company_users.users_uid  = $uid";
+        $connectedDb->prepare($query);
+        return $connectedDb->singleRecord();
+    }
+
+    public static function getCompanyIdFromCompanyUsers($uid){
+        global $connectedDb;
+        $query = "SELECT cmid from company_users where users_uid = $uid";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
