@@ -54,4 +54,6 @@ class Customer extends Controller
         $rs->returnResponse($alluserdata);
 
     }
+
+
 }

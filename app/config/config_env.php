@@ -91,6 +91,7 @@ define('USR_06', "User role is invalid.");
 define('USR_07', "User ID is not valid");
 define('USR_08', "User ID cannot be null");
 define('USR_09', "Link for password recreation has expired");
+define('USR_10', "Error attaching profile image");
 
 
 define('AUT_01', "Authorization code is empty.");
