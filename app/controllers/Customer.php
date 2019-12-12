@@ -31,4 +31,27 @@ class Customer extends Controller
         $rs->returnResponse($alluserdata);
 
     }
+
+
+    public function all()
+    {
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+
+        //Getting the actual Api method
+        $customerdata = Basicinformation::listAll();
+        $alluserdata = ['customerdata'=>$customerdata];
+
+        $rs->returnResponse($alluserdata);
+
+    }
 }
