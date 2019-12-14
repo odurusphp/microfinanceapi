@@ -20,6 +20,8 @@ class Customer extends PostController
 
         //Verifying Token
         $rs->verifyToken($token);
+        print_r($_POST['profileimage']);
+        exit;
 
         if(isset($_FILES['profileimage'])){
             $uploads = new Uploads();
