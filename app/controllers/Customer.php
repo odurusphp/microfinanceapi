@@ -26,7 +26,11 @@ class Customer extends Controller
         $us = new Basicinformation($basicid);
         $basicdata = $us->recordObject;
 
-        $alluserdata = ['basicdata'=>$basicdata];
+        //Getting Image
+        $im  = Documents::getDocumentbyID($basicid);
+        $image  = isset($im->filename) ? $im->filename : '';
+
+        $alluserdata = ['basicdata'=>$basicdata, $image=>$image];
 
         $rs->returnResponse($alluserdata);
 

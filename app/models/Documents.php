@@ -11,4 +11,13 @@ class Documents extends tableDataObject
 
     const TABLENAME  =  'documents';
 
+
+    public static function getDocumentbyID($bid){
+        global $connectedDb;
+        $query = "select filename from documents where bid = $bid ";
+        $connectedDb->prepare($query);
+        return  $connectedDb->singleRecord();
+
+    }
+
 }
