@@ -59,32 +59,36 @@ class Customer extends Controller
 
     }
 
-//    public function savedoc($type, $id){
-//
-//        $did  = null;
-//        echo $type .'<br/>';
-//        echo $id . '<br/>';
-//
-//        $count = Documents::getDocumentbyIDCount($id, $type);
-//
-//
-//        if($count >  0){
-//            $doc = Documents::getDocumentbyID($id, $type);
-//            $did  = $doc->did;
-//        }else{
-//            $did =  null;
-//        }
-//
-//        echo $did;
-//
-//
-//
-//        $doc = new Documents($did);
-//        $doc->recordObject->name = '12312';
-//        $doc->recordObject->type = $type;
-//        $doc->recordObject->bid = $id;
-//        $doc->store();
-//    }
+    public function identity($basicid)
+    {
+        $rs = new RestApi();
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        //Getting the actual Api method
+
+        $idt = new Identification($basicid);
+        $iddata = $idt->recordObject;
+
+        //Getting Image
+        $im  = Documents::getDocumentbyID($basicid, 'Identity');
+        $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
+
+        $alluserdata = ['iddata'=>$iddata, 'image'=>$image];
+
+        
+        $rs->returnResponse($alluserdata);
+
+    }
+
+
 
 
 }
