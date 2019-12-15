@@ -11,7 +11,7 @@ class Tests extends  Controller
 
      public function key(){
 
-         echo Apikey::randomString();
+       echo  SAPPROOT;
      }
 
 }

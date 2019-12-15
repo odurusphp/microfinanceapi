@@ -3,7 +3,10 @@
 //Path for uploads
 
 //$uploadpath =  URLROOT.'uploads/';
-$uploadpath = APPROOT.'/'.'uploads/';
+
+define('SAPPROOT', dirname(dirname(dirname( __FILE__ ))));
+$uploadpath = SAPPROOT.'/public/uploads/';
+
 define('UPLOAD_PATH', $uploadpath);
 
 // Constant to secure "cron" jobs
@@ -16,6 +19,7 @@ define('JSVARS',serialize(array(
 if(!defined('SITENAME')){
 	define('SITENAME','Hello, you should change me');
 }
+
 
 define('COMPANYNAME', 'KUCHENTRASCH');
 
