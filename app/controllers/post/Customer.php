@@ -103,14 +103,19 @@ class Customer extends PostController
 
     private function savedoc($name, $type, $id){
 
+        $did  = null;
+
         $count = Documents::getDocumentbyIDCount($id, $type);
         if($count >  0){
             $doc = Documents::getDocumentbyID($id, $type);
             $did  = $doc->did;
         }else{
-            $did = '';
+            $did =  null;
         }
-        
+
+        echo $did;
+        exit;
+
 
         $doc = new Documents($did);
         $doc->recordObject->name = $name;
