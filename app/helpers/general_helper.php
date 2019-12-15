@@ -131,7 +131,7 @@ function textsms($telephone, $amount){
     $key="c4b012085cf6c914e538";
     $altelephone = substr($telephone, 1);
     $mestelephone = '233'.$altelephone;
-    $message = 'Your daily payment of' . $amount. ' has been received  on '. date('Y-m-d');
+    $message = 'Your daily payment of GHC ' . $amount. ' has been received  on '. date('Y-m-d');
     $message=urlencode($message);
     $sender_id = 'GIT';
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
