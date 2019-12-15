@@ -12,17 +12,17 @@ class Documents extends tableDataObject
     const TABLENAME  =  'documents';
 
 
-    public static function getDocumentbyID($bid){
+    public static function getDocumentbyID($bid, $type){
         global $connectedDb;
-        $query = "select *  from documents where bid = $bid ";
+        $query = "select *  from documents where bid = $bid and type = '$type' ";
         $connectedDb->prepare($query);
         return  $connectedDb->singleRecord();
 
     }
 
-    public static function getDocumentbyIDCount($bid){
+    public static function getDocumentbyIDCount($bid, $type){
         global $connectedDb;
-        $query = "select count(*) from documents where bid = $bid ";
+        $query = "select count(*) from documents where bid = $bid and type = '$type'";
         $connectedDb->prepare($query);
         return  $connectedDb->fetchColumn();
 
