@@ -8,7 +8,7 @@
 
 class Customer extends PostController
 {
-    public function uploadprofile($basicid){
+    public function uploadprofile($basicid = null){
         $rs = new RestApi();
 
 
@@ -20,8 +20,7 @@ class Customer extends PostController
 
         //Verifying Token
         $rs->verifyToken($token);
-        print_r($_POST['profileimage']);
-        exit;
+
 
         if(isset($_FILES['profileimage'])){
             $uploads = new Uploads();
