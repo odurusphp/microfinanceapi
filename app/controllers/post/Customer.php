@@ -110,6 +110,7 @@ class Customer extends PostController
         }else{
             $did = '';
         }
+        
 
         $doc = new Documents($did);
         $doc->recordObject->name = $name;

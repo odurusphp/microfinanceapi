@@ -22,7 +22,7 @@ class Documents extends tableDataObject
 
     public static function getDocumentbyIDCount($bid, $type){
         global $connectedDb;
-        $query = "select count(*) from documents where bid = $bid and type = '$type'";
+        $query = "select count(*) as ct  from documents where bid = $bid and type = '$type'";
         $connectedDb->prepare($query);
         return  $connectedDb->fetchColumn();
 
