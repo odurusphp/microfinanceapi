@@ -78,8 +78,8 @@ class Customer extends Controller
         $iddata = $idt->recordObject;
 
         //Getting Image
-        $im  = Documents::getDocumentbyID($basicid, 'Identity');
-        $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
+        $imagename  = Documents::getDocumentbyID($basicid, 'Identity');
+        $image  = isset($imagename) ? URLROOT.'/uploads/'.$imagename : '';
         //$imagecount = Documents::getDocumentbyIDCount($basicid, 'Identity');
 
         $alluserdata = ['iddata'=>$iddata, 'image'=>$image];

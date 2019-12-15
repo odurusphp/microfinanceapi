@@ -14,9 +14,9 @@ class Documents extends tableDataObject
 
     public static function getDocumentbyID($bid, $type){
         global $connectedDb;
-        $query = "select *  from documents where bid = $bid and type = '$type' ";
+        $query = "select name from documents where bid = $bid and type = '$type' ";
         $connectedDb->prepare($query);
-        return  $connectedDb->singleRecord();
+        return  $connectedDb->fetchColumn();
 
     }
 
