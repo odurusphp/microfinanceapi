@@ -113,9 +113,6 @@ class Customer extends PostController
             $did =  null;
         }
 
-        echo $did;
-        exit;
-
 
         $doc = new Documents($did);
         $doc->recordObject->name = $name;

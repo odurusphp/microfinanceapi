@@ -59,5 +59,32 @@ class Customer extends Controller
 
     }
 
+//    public function savedoc($type, $id){
+//
+//        $did  = null;
+//        echo $type .'<br/>';
+//        echo $id . '<br/>';
+//
+//        $count = Documents::getDocumentbyIDCount($id, $type);
+//
+//
+//        if($count >  0){
+//            $doc = Documents::getDocumentbyID($id, $type);
+//            $did  = $doc->did;
+//        }else{
+//            $did =  null;
+//        }
+//
+//        echo $did;
+//
+//
+//
+//        $doc = new Documents($did);
+//        $doc->recordObject->name = '12312';
+//        $doc->recordObject->type = $type;
+//        $doc->recordObject->bid = $id;
+//        $doc->store();
+//    }
+
 
 }

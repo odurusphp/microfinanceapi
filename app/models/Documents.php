@@ -24,7 +24,8 @@ class Documents extends tableDataObject
         global $connectedDb;
         $query = "select count(*) as ct  from documents where bid = $bid and type = '$type'";
         $connectedDb->prepare($query);
-        return  $connectedDb->fetchColumn();
+        return $connectedDb->fetchColumn();
+
 
     }
 

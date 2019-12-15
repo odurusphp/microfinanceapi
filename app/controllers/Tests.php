@@ -9,9 +9,11 @@
 class Tests extends  Controller
 {
 
-     public function key(){
+     public function test(){
 
-       echo  SAPPROOT;
+
      }
+
+
 
 }
