@@ -15,7 +15,7 @@ class Paymentdata extends tableDataObject
         global $connectedDb;
         $query = "select *  from payments where bid  = $bid ";
         $connectedDb->prepare($query);
-        return  $connectedDb->singleRecord();
+        return  $connectedDb->resultSet();
     }
 
 
