@@ -26,8 +26,6 @@ class Customer extends PostController
             $uploads = new Uploads();
             $uploads->filename = $_FILES['profileimage'];
             $response = $uploads->upLoadFile();
-            print_r($response);
-            exit;
             $filename = $response['filename'];
             $this->savedoc($filename, 'Profile', $basicid);
             $data = ['filename'=>$filename, 'basicid'=>$basicid];
