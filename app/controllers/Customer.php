@@ -28,7 +28,7 @@ class Customer extends Controller
 
         //Getting Image
         $im  = Documents::getDocumentbyID($basicid);
-        $image  = isset($im->name) ? $im->name : '';
+        $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
 
         $alluserdata = ['basicdata'=>$basicdata, 'image'=>$image];
 
