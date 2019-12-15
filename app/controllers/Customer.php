@@ -82,7 +82,7 @@ class Customer extends Controller
         $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
         //$imagecount = Documents::getDocumentbyIDCount($basicid, 'Identity');
 
-        $alluserdata = ['iddata'=>$iddata, 'image'=>$image, 'imagecount'=>$imagecount];
+        $alluserdata = ['iddata'=>$iddata, 'image'=>$image];
 
 
         $rs->returnResponse($alluserdata);
