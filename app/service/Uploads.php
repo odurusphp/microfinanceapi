@@ -31,6 +31,7 @@ class Uploads{
     public function moveFiles($filename){
         $this->templocation = $this->filename["tmp_name"];
         move_uploaded_file($this->templocation, $this->target_dir."/".$filename);
+        rename(UPLOAD_PATH. $filename,  URLROOT."/uploads/".$filename);
     }
 
     public function upLoadFile($newfilename = null){
