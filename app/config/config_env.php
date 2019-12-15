@@ -2,8 +2,8 @@
 
 //Path for uploads
 
-//$uploadpath =  URLROOT.'uploads/';
-$uploadpath = APPROOT.'/'.'uploads/';
+$uploadpath =  URLROOT.'uploads/';
+//$uploadpath = APPROOT.'/'.'uploads/';
 define('UPLOAD_PATH', $uploadpath);
 
 // Constant to secure "cron" jobs
