@@ -14,9 +14,17 @@ class Documents extends tableDataObject
 
     public static function getDocumentbyID($bid){
         global $connectedDb;
-        $query = "select name from documents where bid = $bid ";
+        $query = "select *  from documents where bid = $bid ";
         $connectedDb->prepare($query);
         return  $connectedDb->singleRecord();
+
+    }
+
+    public static function getDocumentbyIDCount($bid){
+        global $connectedDb;
+        $query = "select count(*) from documents where bid = $bid ";
+        $connectedDb->prepare($query);
+        return  $connectedDb->fetchColumn();
 
     }
 

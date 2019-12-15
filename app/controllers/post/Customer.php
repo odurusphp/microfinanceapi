@@ -37,7 +37,16 @@ class Customer extends PostController
     }
 
     private function savedoc($name, $type, $id){
-        $doc = new Documents();
+
+        $count = Documents::getDocumentbyIDCount($id);
+        if($count >  0){
+            $doc = Documents::getDocumentbyID($id);
+            $did  = $doc->did;
+        }else{
+            $did = '';
+        }
+
+        $doc = new Documents($did);
         $doc->recordObject->name = $name;
         $doc->recordObject->type = $type;
         $doc->recordObject->bid = $id;
