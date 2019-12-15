@@ -80,10 +80,11 @@ class Customer extends Controller
         //Getting Image
         $im  = Documents::getDocumentbyID($basicid, 'Identity');
         $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
+        $imagecount = Documents::getDocumentbyIDCount($basicid, 'Identity');
 
-        $alluserdata = ['iddata'=>$iddata, 'image'=>$image];
+        $alluserdata = ['iddata'=>$iddata, 'image'=>$image, 'imagecount'=>$imagecount];
 
-        
+
         $rs->returnResponse($alluserdata);
 
     }
