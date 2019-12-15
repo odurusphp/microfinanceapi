@@ -11,6 +11,7 @@ class Tests extends  Controller
 
      public function test(){
 
+         textsms('0265742649');
 
      }
 

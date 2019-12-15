@@ -127,5 +127,17 @@ function csvString($string){
    return $newstring;
 }
 
+function textsms($telephone, $amount){
+    $key="c4b012085cf6c914e538";
+    $altelephone = substr($telephone, 1);
+    $mestelephone = '233'.$altelephone;
+    $message = 'Your daily payment of' . $amount. ' has been received  on '. date('Y-m-d');
+    $message=urlencode($message);
+    $sender_id = 'KCM KMA';
+    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
+    $result=file_get_contents($url);
+
+}
+
 
 ?>
