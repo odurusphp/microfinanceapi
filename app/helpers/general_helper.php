@@ -133,7 +133,7 @@ function textsms($telephone, $amount){
     $mestelephone = '233'.$altelephone;
     $message = 'Your daily payment of' . $amount. ' has been received  on '. date('Y-m-d');
     $message=urlencode($message);
-    $sender_id = 'KCM KMA';
+    $sender_id = 'GIT';
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
 
