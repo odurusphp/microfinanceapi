@@ -27,7 +27,7 @@ class Customer extends Controller
         $basicdata = $us->recordObject;
 
         //Getting Image
-        $im  = Documents::getDocumentbyID($basicid);
+        $im  = Documents::getDocumentbyID($basicid, 'Profile');
         $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
 
         $alluserdata = ['basicdata'=>$basicdata, 'image'=>$image];
