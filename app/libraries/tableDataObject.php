@@ -61,8 +61,7 @@ class tableDataObject {
          * as properties, but with null values.
          */
         if (isset($objectid)) {
-            //dirty hack
-            ini_set('display_errors', 0);
+
             $conditions = array($this->primaryKey => $objectid);
             $getarecord = self::getRecordByParams($this->tableName, $conditions);
 

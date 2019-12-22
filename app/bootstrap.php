@@ -4,15 +4,11 @@
 require_once 'config/config.php';
 require_once 'config/config_env.php';
 require_once 'helpers/email_helper.php';
-require_once 'helpers/excel_helper.php';
-require_once 'helpers/simple_encrypt.php';
-
-if(DEVMODE === true){
-    require('helpers/devhelpers.php');
-}
-
+require_once 'helpers/general_helper.php';
 // Load everything we require via composer
 require('../vendor/autoload.php');
+
+
 
 /*
  * Autoload Core Libraries
@@ -44,10 +40,10 @@ spl_autoload_register(function($class){
 /**
  * We are always going to need the database, so we are going to
  * create our database object here. It can then be referenced
- * in class member functions as "global $lehrerdb"
+ * in class member functions as "global $connectedDb"
  */
 
-$fdadb = new Database();
+$connectedDb = new Database();
 //$client = new Google_Client();
 
 // provide a catch all exception handler...
@@ -55,7 +51,14 @@ $fdadb = new Database();
  * @param $exception
  */
 function pokemon($exception){
-    echo "<pre>" . $exception . "</pre>";
+    $errordata = [
+        'exceptiondata' => $exception,
+        'errormessage' => $exception->getMessage()
+    ];
+
+    $errordisplaycontroller = new Controller();
+    $errordisplaycontroller->view("pages/errorpage", $errordata);
+
     exit();
 }
 
