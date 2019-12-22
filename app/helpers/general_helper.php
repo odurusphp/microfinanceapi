@@ -59,7 +59,7 @@ function getUserRole($roleid){
     if($roleid == 1){
         return  "<span class='badge badge-success'>Administrator</span>";
     }elseif($roleid == 2){
-         return  "<span class='badge badge-dark'>Customer Admin</span>";
+        return  "<span class='badge badge-dark'>Customer Admin</span>";
     }elseif($roleid == 3){
         return  "<span class='badge badge-success' style='background: #1c7430 !important;'>Customer User</span>";
     }
@@ -123,8 +123,32 @@ function domainRestriction($companyemail, $email){
 
 
 function csvString($string){
-   $newstring =  mb_convert_encoding($string, 'UTF-16LE', 'UTF-8');
-   return $newstring;
+    $newstring =  mb_convert_encoding($string, 'UTF-16LE', 'UTF-8');
+    return $newstring;
+}
+
+function textsms($telephone, $amount){
+    $key="c4b012085cf6c914e538";
+    $altelephone = substr($telephone, 1);
+    $mestelephone = '233'.$altelephone;
+    $message = 'Your daily payment of GHC ' . $amount. ' has been received  on '. date('Y-m-d');
+    $message=urlencode($message);
+    $sender_id = 'GIT';
+    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
+    $result=file_get_contents($url);
+
+}
+
+function textsmsowner($telephone = '0549743710', $amount, $name){
+    $key="c4b012085cf6c914e538";
+    $altelephone = substr($telephone, 1);
+    $mestelephone = '233'.$altelephone;
+    $message = 'Payment  of GHC ' . $amount. ' has been received from '.$name. ' om '. date('Y-m-d');
+    $message=urlencode($message);
+    $sender_id = 'GIT';
+    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
+    $result=file_get_contents($url);
+
 }
 
 
