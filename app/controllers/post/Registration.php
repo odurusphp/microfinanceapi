@@ -49,6 +49,8 @@ class Registration extends PostController
         $usdata->gender = $gender;
         $usdata->dateofbirth  = $dateofbirth;
         $usdata->userid = $userid;
+        $usdata->dateregistered = date('Y-m-d');
+
         if($us->store()){
             $bid = $us->recordObject->bid;
             $data = ['message'=>'Customer successfully created', 'userid'=>$userid, 'basicid'=>$bid  ];
