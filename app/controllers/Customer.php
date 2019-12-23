@@ -76,9 +76,9 @@ class Customer extends Controller
 
         $iddata = Identification::getIdentificationByBid($basicid);
         $idnumber = isset($iddata->idnumber) ?  $iddata->idnumber : '';
-        $idtype = isset($iddata->idnumber) ?  $iddata->idnumber : '';
-        $dateofissue = isset($iddata->idnumber) ?  $iddata->idnumber : '';
-        $dateofexpiry  = isset($iddata->idnumber) ?  $iddata->idnumber : '';
+        $idtype = isset($iddata->idnumber) ?  $iddata->idtype : '';
+        $dateofissue = isset($iddata->idnumber) ?  $iddata->dateofissue : '';
+        $dateofexpiry  = isset($iddata->idnumber) ?  $iddata->expirydate : '';
 
         //Getting Image
         $im  = Documents::getDocumentbyID($basicid, 'Identity');
