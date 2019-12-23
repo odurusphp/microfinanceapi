@@ -74,15 +74,20 @@ class Customer extends Controller
 
         //Getting the actual Api method
 
-        $idt = new Identification($basicid);
-        $iddata = $idt->recordObject;
+        $iddata = Identification::getIdentificationByBid($basicid);
+        $idnumber = isset($iddata->idnumber) ?  $iddata->idnumber : '';
+        $idtype = isset($iddata->idnumber) ?  $iddata->idnumber : '';
+        $dateofissue = isset($iddata->idnumber) ?  $iddata->idnumber : '';
+        $dateofexpiry  = isset($iddata->idnumber) ?  $iddata->idnumber : '';
 
         //Getting Image
         $im  = Documents::getDocumentbyID($basicid, 'Identity');
-        $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
+        $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : URLROOT.'/uploads/noimage.jpg';
+
         $imagecount = Documents::getDocumentbyIDCount($basicid, 'Identity');
 
-        $alluserdata = ['iddata'=>$iddata, 'image'=>$image, 'imagecount'=>$imagecount];
+        $alluserdata = ['idnumber'=>$idnumber, 'idtype'=>$idtype, 'dateofissue'=>$dateofissue,
+                        'expirydate'=>$dateofexpiry,  'image'=>$image, 'imagecount'=>$imagecount];
 
 
         $rs->returnResponse($alluserdata);

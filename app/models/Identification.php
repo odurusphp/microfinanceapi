@@ -9,4 +9,11 @@
 class Identification extends tableDataObject
 {
     const TABLENAME  =  'identification';
+
+    public static function getIdentificationByBid($bid){
+        global $connectedDb;
+        $query = "select *  from identification where bid = $bid ";
+        $connectedDb->prepare($query);
+        return  $connectedDb->singleRecord();
+    }
 }
