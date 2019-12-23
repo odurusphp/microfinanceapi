@@ -17,6 +17,7 @@ class Payments extends PostController
 
         $amount = isset($_POST['amount']) ? trim($_POST['amount']) : '';
         $dateofpayment = isset($_POST['dateofpayment']) ? trim($_POST['dateofpayment']) : '';
+        $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
 
 
         $postfields = (array_keys($_POST));
@@ -38,6 +39,7 @@ class Payments extends PostController
         $idt->recordObject->amount = $amount;
         $idt->recordObject->dateofpayment = $dateofpayment;
         $idt->recordObject->bid = $basicid;
+        $idt->recordObject->userid = $userid;
         if($idt->store()) {
             $ba = new Basicinformation($basicid);
             $telephone = $ba->recordObject->telephone;
