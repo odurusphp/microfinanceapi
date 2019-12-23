@@ -101,6 +101,28 @@ class Customer extends PostController
 
     }
 
+    public function search()
+    {
+        $rs = new RestApi();
+
+        $param= isset($_POST['param']) ? trim($_POST['param']) : '';
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        //Getting the actual Api method
+        $basicdata = Basicinformation::search($param);
+        $alluserdata = ['customerdata'=>$basicdata];
+        $rs->returnResponse($alluserdata);
+
+    }
+
     private function savedoc($name, $type, $id){
 
         $did  = null;

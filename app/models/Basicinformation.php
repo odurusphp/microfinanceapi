@@ -27,4 +27,11 @@ class Basicinformation extends tableDataObject
         return $connectedDb->resultSet();
     }
 
+    public static function search($parameter){
+        global $connectedDb;
+        $query = "Select * from basicinformation  where fullname like  '$parameter%' OR telephone like '$parameter%' ";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
 }
