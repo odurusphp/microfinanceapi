@@ -20,4 +20,11 @@ class Basicinformation extends tableDataObject
         return $connectedDb->singleRecord();
     }
 
+    public static function getLimitedCustomers(){
+        global $connectedDb;
+        $query = "Select * from basicinformation order by bid desc limit 0, 10 ";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
 }

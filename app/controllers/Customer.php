@@ -52,7 +52,7 @@ class Customer extends Controller
 
 
         //Getting the actual Api method
-        $customerdata = Basicinformation::listAll();
+        $customerdata = Basicinformation::getLimitedCustomers();
         $alluserdata = ['customerdata'=>$customerdata];
 
         $rs->returnResponse($alluserdata);
