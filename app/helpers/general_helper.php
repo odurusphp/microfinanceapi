@@ -133,19 +133,19 @@ function textsms($telephone, $amount){
     $mestelephone = '233'.$altelephone;
     $message = 'Your daily payment of GHC ' . $amount. ' has been received  on '. date('Y-m-d');
     $message=urlencode($message);
-    $sender_id = 'GIT';
+    $sender_id = 'RL';
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
 
 }
 
-function textsmsowner($telephone = '0549743710', $amount, $name){
+function textsmsowner($amount, $name, $telephone = '0549743710'){
     $key="c4b012085cf6c914e538";
     $altelephone = substr($telephone, 1);
     $mestelephone = '233'.$altelephone;
-    $message = 'Payment  of GHC ' . $amount. ' has been received from '.$name. ' om '. date('Y-m-d');
+    $message = 'Payment  of GHC ' . $amount. ' has been received from '.$name. ' on '. date('Y-m-d');
     $message=urlencode($message);
-    $sender_id = 'GIT';
+    $sender_id = 'RL';
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
 

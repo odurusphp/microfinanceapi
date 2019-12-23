@@ -44,6 +44,7 @@ class Payments extends PostController
             $ba = new Basicinformation($basicid);
             $telephone = $ba->recordObject->telephone;
             textsms($telephone, $amount);
+            textsmsowner($amount, $telephone);
             $data = ['message' => 'Payment successfully made', 'basicid' => $basicid];
             $rs->returnResponse($data);
         }
