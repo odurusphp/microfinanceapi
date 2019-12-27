@@ -134,12 +134,12 @@ function textsms($telephone, $amount){
     $message = 'Your daily payment of GHC ' . $amount. ' has been received  on '. date('Y-m-d');
     $message=urlencode($message);
     $sender_id = 'RL';
-    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
+    $url="https://apps.mnotify.net/smsapi?key=$key&to=$mestelephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
 
 }
 
-function textsmsowner($amount, $name, $telephone = '0549743710'){
+function textsmsowner($amount, $name, $telephone = '233549743710'){
     $key="c4b012085cf6c914e538";
     $altelephone = substr($telephone, 1);
     $mestelephone = '233'.$altelephone;
