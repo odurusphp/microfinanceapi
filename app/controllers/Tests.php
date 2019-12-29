@@ -11,6 +11,8 @@ class Tests extends  Controller
 
     public function test(){
 
+        phpinfo();
+
         textsms('0547988633', 100);
 
 
