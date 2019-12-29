@@ -8,70 +8,54 @@
 
 class Api{
 
-    // This is a curl get function to be reused for all curl get request
-    public  static function curlGetRequest($url, $token, $authorization, $return_array = true){
+       private function decodeCredentials(){
+           $encodedstr = SMS_APPID.':'.SMS_SECRET;
+           return base64_encode($encodedstr);
+       }
 
-        //try catch block here
-        try{
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            if($authorization == true){
-                curl_setopt(
-                    $ch,
-                    CURLOPT_HTTPHEADER,
-                    array('Accept:application/json',
-                        'api-version: 2015-03-31',
-                        'Authorization:'.$token)
-                );
-            }
+       public function authenticate(){
+           $curl = curl_init();
+           curl_setopt_array($curl, array(
+               CURLOPT_URL => "https://auth.routee.net/oauth/token",
+               CURLOPT_RETURNTRANSFER => true,
+               CURLOPT_ENCODING => "",
+               CURLOPT_MAXREDIRS => 10,
+               CURLOPT_TIMEOUT => 30,
+               CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+               CURLOPT_CUSTOMREQUEST => "POST",
+               CURLOPT_POSTFIELDS => "grant_type=client_credentials",
+               CURLOPT_HTTPHEADER => array(
+                   "authorization: Basic ".$this->decodeCredentials(),
+                   "content-type: application/x-www-form-urlencoded"
+               ),
+           ));
+           $response = curl_exec($curl);
+           $data = json_decode($response, TRUE);
+           $token = $data['access_token'];
+           curl_close($curl);
+           return $token;
 
+       }
 
-            $response = curl_exec($ch);
+       public function sendsms($data){
 
-            if (!$response){
-                throw new frameworkError('API request Error');
-            }
-            else{
-                $check = isValidXML($response);
-                if($check == 'Valid'){
-                    return $response;
-                }else{
-                    $response = preg_replace('/[^(\x20-\x7F)]*/','',$response);
-                    $output = json_decode($response,$return_array);
-                    return $output;
-                }
+           $curl = curl_init();
+           curl_setopt_array($curl, array(
+               CURLOPT_URL => "https://connect.routee.net/sms",
+               CURLOPT_RETURNTRANSFER => true,
+               CURLOPT_ENCODING => "",
+               CURLOPT_MAXREDIRS => 10,
+               CURLOPT_TIMEOUT => 30,
+               CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+               CURLOPT_CUSTOMREQUEST => "POST",
+               CURLOPT_POSTFIELDS =>$data,
+               CURLOPT_HTTPHEADER => array(
+                   "authorization: Bearer ".$this->authenticate(),
+                   "content-type: application/json"
+               ),
+           ));
 
-            }
-
-
-        }
-        catch (frameworkError $fe){
-            // echo $fe->getMessage();
-        }
-
-
-    }
-
-
-// This is a curl post function to be reused for all curl post request
-    public static function curlPatchRequest($url, $data, $authorization, $token, $requestheader){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        if($authorization == true){
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $requestheader);
-        }
-        return $response = curl_exec($ch);
-
-    }
-
+           $response = curl_exec($curl);
+       }
 
 }

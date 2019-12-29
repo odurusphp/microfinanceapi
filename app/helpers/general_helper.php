@@ -128,26 +128,24 @@ function csvString($string){
 }
 
 function textsms($telephone, $amount){
-    $key="c4b012085cf6c914e538";
     $altelephone = substr($telephone, 1);
     $mestelephone = '233'.$altelephone;
     $message = 'Your daily payment of GHC ' . $amount. ' has been received  on '. date('Y-m-d');
-    $message=urlencode($message);
-    $sender_id = 'RL';
-    $url="https://apps.mnotify.net/smsapi?key=$key&to=$mestelephone&msg=$message&sender_id=$sender_id";
-    $result=file_get_contents($url);
-
+    $data = ['body'=>$message, 'to'=>$mestelephone, 'from'=>'RL'];
+    $jdata = json_encode($data);
+    $ap = new Api();
+    $ap->sendsms($jdata);
 }
 
-function textsmsowner($amount, $name, $telephone = '233549743710'){
-    $key="c4b012085cf6c914e538";
+function textsmsowner($amount, $name, $telephone= '0549743710'){
+
     $altelephone = substr($telephone, 1);
     $mestelephone = '233'.$altelephone;
     $message = 'Payment  of GHC ' . $amount. ' has been received from '.$name. ' on '. date('Y-m-d');
-    $message=urlencode($message);
-    $sender_id = 'RL';
-    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
-    $result=file_get_contents($url);
+    $data = ['body'=>$message, 'to'=>$mestelephone, 'from'=>'RL'];
+    $jdata = json_encode($data);
+    $ap = new Api();
+    $ap->sendsms($jdata);
 
 }
 

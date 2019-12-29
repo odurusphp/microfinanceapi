@@ -47,6 +47,13 @@ define ('SMTP_PORT', '465');
 define ('MAIL_USERNAME', 'poqacompany@gmail.com');
 define ('MAIL_PASSWORD', 'poqacompany@2019');
 
+//SMS Credentials
+define ('SMS_APPID', '5e07c7391e3fa94754940832');
+define ('SMS_SECRET', 'TDj1awvoSl');
+
+
+
+
 //Define data types
 define('BOOLEAN',  1);
 define('INT',  2);
