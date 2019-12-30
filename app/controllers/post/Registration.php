@@ -121,7 +121,7 @@ class Registration extends PostController
         $rs = new RestApi();
 
 
-        $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress', ' prevadress', 'lengthofstay'];
+        $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress', 'prevaddress', 'lengthofstay'];
 
         $city = isset($_POST['city']) ? trim($_POST['city']) : '';
         $streetaddress = isset($_POST['streetaddress']) ? trim($_POST['streetaddress']) : '';
