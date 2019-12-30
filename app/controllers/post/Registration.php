@@ -113,4 +113,106 @@ class Registration extends PostController
         }
 
     }
+
+    public function location($basicid){
+
+        $rs = new RestApi();
+
+
+        $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress', ' prevadress', 'lengthofstay'];
+
+        $city = isset($_POST['city']) ? trim($_POST['city']) : '';
+        $streetaddress = isset($_POST['streetaddress']) ? trim($_POST['streetaddress']) : '';
+        $region = isset($_POST['region']) ? trim($_POST['region']) : '';
+        $landmark = isset($_POST['landmark']) ? trim($_POST['landmark']) : '';
+        $postaladdress = isset($_POST['postaladdress']) ? trim($_POST['postaladdress']) : '';
+        $prevaddress  = isset($_POST['prevaddress']) ? trim($_POST['prevaddress']) : '';
+        $lengthofstay  = isset($_POST['lengthofstay']) ? trim($_POST['lengthofstay']) : '';
+
+
+        $postfields = (array_keys($_POST));
+
+        //Validating the fieldnames in the method
+        $rs->validateFieldNames($requiredfieldnames, $postfields);
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        $us = new Basicinformation($basicid);
+        $usdata =& $us->recordObject;
+        $usdata->city = $city;
+        $usdata->streetaddress = $streetaddress;
+        $usdata->region = $region;
+        $usdata->landmark = $landmark;
+        $usdata->postaladdress = $postaladdress;
+        $usdata->previousaddress = $prevaddress;
+        $usdata->lengthofstay = $lengthofstay;
+
+        if($us->store()){
+            $bid = $us->recordObject->bid;
+            $data = ['message'=>'Customer successfully updated', 'basicid'=>$bid  ];
+            $rs->returnResponse($data);
+
+        }
+
+    }
+
+    public function advanced($basicid){
+
+        $rs = new RestApi();
+
+
+
+        $requiredfieldnames = ['maritalstatus', 'occupation', 'employer', 'position', 'spousename', 'spousetelephone',
+                             'spouseoccupation', 'spousenationality', 'religion'];
+
+        $maritalstatus = isset($_POST['maritalstatus']) ? trim($_POST['maritalstatus']) : '';
+        $occupation = isset($_POST['occupation']) ? trim($_POST['occupation']) : '';
+        $employer = isset($_POST['employer']) ? trim($_POST['employer']) : '';
+        $position = isset($_POST['position']) ? trim($_POST['position']) : '';
+        $spousename = isset($_POST['spousename']) ? trim($_POST['spousename']) : '';
+        $spousetelephone  = isset($_POST['spousetelephone']) ? trim($_POST['spousetelephone']) : '';
+        $spousenationality  = isset($_POST['spousenationality']) ? trim($_POST['spousenationality']) : '';
+        $religion  = isset($_POST['religion']) ? trim($_POST['religion']) : '';
+
+
+        $postfields = (array_keys($_POST));
+
+        //Validating the fieldnames in the method
+        $rs->validateFieldNames($requiredfieldnames, $postfields);
+
+        // Verify Apikey
+        $rs->getApikey();
+
+        //Getting Authorization token
+        $token = $rs->getBearerToken();
+
+        //Verifying Token
+        $rs->verifyToken($token);
+
+        $us = new Basicinformation($basicid);
+        $usdata =& $us->recordObject;
+        $usdata->maritalstatus = $maritalstatus;
+        $usdata->position = $position;
+        $usdata->religion = $religion;
+        $usdata->occupation = $occupation;
+        $usdata->employer = $employer;
+        $usdata->spousename = $spousename;
+        $usdata->spousetelephone = $spousetelephone;
+        $usdata->spousenationality = $spousenationality;
+
+        if($us->store()){
+            $bid = $us->recordObject->bid;
+            $data = ['message'=>'Customer successfully updated', 'basicid'=>$bid  ];
+            $rs->returnResponse($data);
+
+        }
+
+    }
 }
