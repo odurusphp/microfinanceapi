@@ -22,6 +22,7 @@ class Registration extends PostController
         $dateofbirth = isset($_POST['dateofbirth']) ? trim($_POST['dateofbirth']) : '';
         $nationality  = isset($_POST['nationality']) ? trim($_POST['nationality']) : '';
         $gender  = isset($_POST['gender']) ? trim($_POST['gender']) : '';
+        $accounttype  = isset($_POST['accounttype']) ? trim($_POST['accounttype']) : '';
 
 
         $postfields = (array_keys($_POST));
@@ -51,6 +52,7 @@ class Registration extends PostController
         $usdata->userid = $userid;
         $usdata->dateregistered = date('Y-m-d');
         $usdata->fullname =  $firstname.' '.$lastname;
+        $usdata->accounttype =  $accounttype;
 
 
         if($us->store()){
