@@ -149,7 +149,7 @@ class Registration extends PostController
         $us = new Basicinformation($basicid);
         $usdata =& $us->recordObject;
         $usdata->city = $city;
-        $usdata->streetaddress = $streetaddress;
+        $usdata->street = $streetaddress;
         $usdata->region = $region;
         $usdata->landmark = $landmark;
         $usdata->postaladdress = $postaladdress;
