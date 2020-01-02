@@ -17,6 +17,13 @@ class Accounts extends tableDataObject
         return $connectedDb->fetchColumn();
     }
 
+    public static function getCountbyType($accounttype){
+        global $connectedDb;
+        $getdata = "SELECT count(*) as ct from accounts where accounttype = '$accounttype' ";
+        $connectedDb->prepare($getdata);
+        return $connectedDb->fetchColumn();
+    }
+
     public static function getCustomeraccounts($bid){
         global $connectedDb;
         $getdata = "SELECT * from accounts where bid = $bid  ";

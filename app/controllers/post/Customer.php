@@ -159,7 +159,7 @@ class Customer extends PostController
 
         $customercountceiling = 200;
         //Get count of account number
-        $accountsequence = Basicinformation::getCustomersCount() + 1;
+        $accountsequence = Accounts::getCountbyType($accounttype) + 1;
         $customernumber = $customercountceiling + $accountsequence;
 
         $accountcode = '';

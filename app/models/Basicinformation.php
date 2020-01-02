@@ -41,6 +41,21 @@ class Basicinformation extends tableDataObject
         return $connectedDb->fetchColumn();
     }
 
+    public static function approvedCustomers(){
+        global $connectedDb;
+        $query = "Select count(*) as ct from basicinformation where status = 1";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
+    public static function pendingCustomers(){
+        global $connectedDb;
+        $query = "Select count(*) as ct from basicinformation where status is null ";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
+
 
 
 }
