@@ -34,4 +34,13 @@ class Basicinformation extends tableDataObject
         return $connectedDb->resultSet();
     }
 
+    public static function getCustomersCount(){
+        global $connectedDb;
+        $query = "Select count(*) as ct from basicinformation ";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+    }
+
+
+
 }

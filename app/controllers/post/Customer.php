@@ -135,12 +135,62 @@ class Customer extends PostController
             $did =  null;
         }
 
-
         $doc = new Documents($did);
         $doc->recordObject->name = $name;
         $doc->recordObject->type = $type;
         $doc->recordObject->bid = $id;
         $doc->store();
+    }
+
+    public function accounts($bid){
+
+        $rs = new RestApi();
+
+        $requiredfieldnames = ['accounttype', 'accountnumber', 'accountname'];
+
+        $accounttype = isset($_POST['accounttype']) ? trim($_POST['accounttype']) : '';
+        $accountname = isset($_POST['accountname']) ? trim($_POST['accountname']) : '';
+        $postfields = (array_keys($_POST));
+
+        $accountcount = Accounts::getCountbyAccounttype($accounttype, $bid);
+        if($accountcount > 0){
+            $rs->throwErrror('AC01', 'Account already exits', 'account type');
+        }
+
+        $customercountceiling = 200;
+        //Get count of account number
+        $accountsequence = Basicinformation::getCustomersCount() + 1;
+        $customernumber = $customercountceiling + $accountsequence;
+
+        $accountcode = '';
+        if($accounttype  ==  'Loan Account'){
+            $accountcode = '01';
+        }elseif($accounttype  ==  'Susu Account'){
+            $accountcode = '02';
+        }elseif($accounttype  ==  'Savings Account'){
+            $accountcode = '03';
+        }elseif($accounttype  ==  'Fixed Deposit'){
+            $accountcode = '04';
+        }elseif($accounttype  ==  'Current Account'){
+            $accountcode = '05';
+        }
+
+        $currency = '00';
+        $branchcode = '021';
+        $accountnumber = $branchcode.$accountcode.$currency.$customernumber;
+
+        //Insert account
+        $ac = new Accounts();
+        $ac->recordObject->accountnumber = $accountnumber;
+        $ac->recordObject->accounttype = $accounttype;
+        $ac->recordObject->accountname = $accountname;
+        $ac->recordObject->bid = $bid;
+        if($ac->store()){
+            $data = ['message'=>'Account successfullly Added', 'basicid'=>$bid ];
+            $rs->returnResponse($data);
+        }
+
+
     }
 
 }

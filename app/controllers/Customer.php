@@ -30,7 +30,9 @@ class Customer extends Controller
         $im  = Documents::getDocumentbyID($basicid, 'Profile');
         $image  = isset($im->name) ? URLROOT.'/uploads/'.$im->name : '';
 
-        $alluserdata = ['basicdata'=>$basicdata, 'image'=>$image];
+        $accountdata = Accounts::getCustomeraccounts($basicid);
+
+        $alluserdata = ['basicdata'=>$basicdata, 'image'=>$image, 'accounts'=>$accountdata];
 
         $rs->returnResponse($alluserdata);
 
@@ -88,7 +90,6 @@ class Customer extends Controller
 
         $alluserdata = ['idnumber'=>$idnumber, 'idtype'=>$idtype, 'dateofissue'=>$dateofissue,
                         'expirydate'=>$dateofexpiry,  'image'=>$image, 'imagecount'=>$imagecount];
-
 
         $rs->returnResponse($alluserdata);
 
