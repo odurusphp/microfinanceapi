@@ -13,11 +13,12 @@ class Payments extends PostController
     public function pay($basicid = null){
         $rs = new RestApi();
 
-        $requiredfieldnames = ['amount', 'dateofpayment'];
+        $requiredfieldnames = ['amount', 'dateofpayment', 'accountnumber'];
 
         $amount = isset($_POST['amount']) ? trim($_POST['amount']) : '';
         $dateofpayment = isset($_POST['dateofpayment']) ? trim($_POST['dateofpayment']) : '';
         $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
+        $accountnumber = isset($_POST['accountnumber']) ? trim($_POST['accountnumber']) : '';
 
 
         $postfields = (array_keys($_POST));
@@ -38,6 +39,7 @@ class Payments extends PostController
         $idt = new Paymentdata();
         $idt->recordObject->amount = $amount;
         $idt->recordObject->dateofpayment = $dateofpayment;
+        $idt->recordObject->accountnumber = $accountnumber;
         $idt->recordObject->bid = $basicid;
         $idt->recordObject->userid = $userid;
         if($idt->store()) {

@@ -23,5 +23,5 @@ class Accounts extends tableDataObject
         $connectedDb->prepare($getdata);
         return $connectedDb->resultSet();
     }
-    
+
 }
