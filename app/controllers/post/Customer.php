@@ -157,10 +157,10 @@ class Customer extends PostController
             $rs->throwErrror('AC01', 'Account already exits', 'account type');
         }
 
-        $customercountceiling = 200;
-        //Get count of account number
-        $accountsequence = Accounts::getCountbyType($accounttype) + 1;
-        $customernumber = $customercountceiling + $accountsequence;
+
+
+        $ba =  new Basicinformation($bid);
+        $staffnumber = $ba->recordObject->staffnumber;
 
         $accountcode = '';
         if($accounttype  ==  'Loan Account'){
@@ -177,7 +177,7 @@ class Customer extends PostController
 
         $currency = '001';
         $branchcode = '021';
-        $accountnumber = $branchcode.$accountcode.$currency.$customernumber;
+        $accountnumber = $branchcode.$accountcode.$currency.$staffnumber;
 
         //Insert account
         $ac = new Accounts();

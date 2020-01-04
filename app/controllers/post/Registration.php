@@ -121,7 +121,8 @@ class Registration extends PostController
         $rs = new RestApi();
 
 
-        $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress', 'prevaddress', 'lengthofstay'];
+        $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress',
+                               'prevaddress', 'lengthofstay'];
 
         $city = isset($_POST['city']) ? trim($_POST['city']) : '';
         $streetaddress = isset($_POST['streetaddress']) ? trim($_POST['streetaddress']) : '';
@@ -146,6 +147,9 @@ class Registration extends PostController
         //Verifying Token
         $rs->verifyToken($token);
 
+        $customercount = Basicinformation::getCustomersCount() + 1;
+        $staffnumber =  $customercount + 200;
+
         $us = new Basicinformation($basicid);
         $usdata =& $us->recordObject;
         $usdata->city = $city;
@@ -155,6 +159,7 @@ class Registration extends PostController
         $usdata->postaladdress = $postaladdress;
         $usdata->previousaddress = $prevaddress;
         $usdata->lengthofstay = $lengthofstay;
+        $usdata->staffnumber = $staffnumber;
 
         if($us->store()){
             $bid = $us->recordObject->bid;
