@@ -169,13 +169,13 @@ class Customer extends PostController
             $accountcode = '02';
         }elseif($accounttype  ==  'Savings Account'){
             $accountcode = '03';
-        }elseif($accounttype  ==  'Fixed Deposit'){
+        }elseif($accounttype  ==  'Cash Collateral'){
             $accountcode = '04';
         }elseif($accounttype  ==  'Current Account'){
             $accountcode = '05';
         }
 
-        $currency = '00';
+        $currency = '001';
         $branchcode = '021';
         $accountnumber = $branchcode.$accountcode.$currency.$customernumber;
 
