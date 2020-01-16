@@ -39,6 +39,13 @@ class Registration extends PostController
         //Verifying Token
         $rs->verifyToken($token);
 
+
+
+        //Staff number logic changed
+        $minid  = Customernumbers::getnextaccount();
+        $cm  = new Customernumbers($minid);
+        $staffnumber = $cm->recordObject->code;
+
         $us = new Basicinformation();
         $usdata =& $us->recordObject;
         $usdata->email = $email;
@@ -52,11 +59,16 @@ class Registration extends PostController
         $usdata->userid = $userid;
         $usdata->dateregistered = date('Y-m-d');
         $usdata->fullname =  $firstname.' '.$lastname;
-        $usdata->accounttype =  $accounttype;
+        $usdata->staffnumber  =  $staffnumber;
 
 
         if($us->store()){
             $bid = $us->recordObject->bid;
+
+            //Update status
+            $st  = new Customernumbers($minid);
+            $st->recordObject->status = 1;
+            $st->store();
             $data = ['message'=>'Customer successfully created', 'userid'=>$userid, 'basicid'=>$bid  ];
             $rs->returnResponse($data);
 
@@ -120,7 +132,6 @@ class Registration extends PostController
 
         $rs = new RestApi();
 
-
         $requiredfieldnames = ['city', 'streetaddress', 'region', 'landmark', 'postaladdress',
                                'prevaddress', 'lengthofstay'];
 
@@ -147,8 +158,7 @@ class Registration extends PostController
         //Verifying Token
         $rs->verifyToken($token);
 
-        $customercount = Basicinformation::getCustomersCount() + 1;
-        $staffnumber =  $customercount + 200;
+
 
         $us = new Basicinformation($basicid);
         $usdata =& $us->recordObject;
@@ -159,7 +169,7 @@ class Registration extends PostController
         $usdata->postaladdress = $postaladdress;
         $usdata->previousaddress = $prevaddress;
         $usdata->lengthofstay = $lengthofstay;
-        $usdata->staffnumber = $staffnumber;
+
 
         if($us->store()){
             $bid = $us->recordObject->bid;
