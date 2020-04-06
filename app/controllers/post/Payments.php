@@ -20,6 +20,13 @@ class Payments extends PostController
         $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
         $accountnumber = isset($_POST['accountnumber']) ? trim($_POST['accountnumber']) : '';
 
+        //get loan count
+        $loancount =  Loandata::getLoanCountByAccoountNumber($accountnumber);
+        if($loancount > 0){
+            $ln = Loandata::getLoanSingleByAccoountNumberWithStatus($accountnumber);
+            $loanid = $ln->loanid;
+        }
+
 
         $postfields = (array_keys($_POST));
 
@@ -42,6 +49,9 @@ class Payments extends PostController
         $idt->recordObject->accountnumber = $accountnumber;
         $idt->recordObject->bid = $basicid;
         $idt->recordObject->userid = $userid;
+        if($loancount > 0){
+            $idt->recordObject->loanid = $loanid;
+        }
         if($idt->store()) {
             $ba = new Basicinformation($basicid);
             $telephone = $ba->recordObject->telephone;
