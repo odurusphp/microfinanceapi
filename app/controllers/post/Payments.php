@@ -21,10 +21,11 @@ class Payments extends PostController
         $accountnumber = isset($_POST['accountnumber']) ? trim($_POST['accountnumber']) : '';
 
         //get loan count
+        $loanid = '';
         $loancount =  Loandata::getLoanCountByAccoountNumber($accountnumber);
         if($loancount > 0){
             $ln = Loandata::getLoanSingleByAccoountNumberWithStatus($accountnumber);
-            $loanid = $ln->loanid;
+            $loanid = isset($ln->loanid) ?  $ln->loanid  : '';
         }
 
 
@@ -49,9 +50,8 @@ class Payments extends PostController
         $idt->recordObject->accountnumber = $accountnumber;
         $idt->recordObject->bid = $basicid;
         $idt->recordObject->userid = $userid;
-        if($loancount > 0){
-            $idt->recordObject->loanid = $loanid;
-        }
+        $idt->recordObject->loanid = $loanid;
+
         if($idt->store()) {
             $ba = new Basicinformation($basicid);
             $telephone = $ba->recordObject->telephone;
