@@ -21,11 +21,11 @@ class Payments extends PostController
         $accountnumber = isset($_POST['accountnumber']) ? trim($_POST['accountnumber']) : '';
 
         //get loan count
-        $loanid = '';
+        $loanid = null;
         $loancount =  Loandata::getLoanCountByAccoountNumber($accountnumber);
         if($loancount > 0){
             $ln = Loandata::getLoanSingleByAccoountNumberWithStatus($accountnumber);
-            $loanid = isset($ln->loanid) ?  $ln->loanid  : '';
+            $loanid = isset($ln->loanid) ?  $ln->loanid  : null;
         }
 
 
