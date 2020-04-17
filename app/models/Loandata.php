@@ -48,9 +48,9 @@ class Loandata extends  tableDataObject
 
     public static function getLoanCountByAccoountNumber($accountnumber){
         global $fdadb;
-        $getdata = "SELECT count(*) as ct  from loans where accountnumber = '$accountnumber'  ";
+        $getdata = "SELECT *  from loans where accountnumber = '$accountnumber'  ";
         $fdadb->prepare($getdata);
-        return $fdadb->fetchColumn();
+        return $fdadb->resultSet();
     }
 
 
