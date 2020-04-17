@@ -22,10 +22,13 @@ class Payments extends PostController
 
         //get loan count
         $loancount =  Loandata::getLoanCountByAccoountNumber($accountnumber);
+        echo $loancount;
+        exit;
         if($loancount > 0){
             $ln = Loandata::getLoanSingleByAccoountNumberWithStatus($accountnumber);
             $loanid = $ln->loanid;
         }
+
 
 
         $postfields = (array_keys($_POST));
