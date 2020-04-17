@@ -20,16 +20,12 @@ class Payments extends PostController
         $userid = isset($_POST['userid']) ? trim($_POST['userid']) : '';
         $accountnumber = isset($_POST['accountnumber']) ? trim($_POST['accountnumber']) : '';
 
-
         //get loan count
-        $loancount =  count(Loandata::getLoanCountByAccoountNumber($accountnumber));
-        echo $loancount;
-        exit;
+        $loancount =  Loandata::getLoanCountByAccoountNumber($accountnumber);
         if($loancount > 0){
             $ln = Loandata::getLoanSingleByAccoountNumberWithStatus($accountnumber);
             $loanid = $ln->loanid;
         }
-
 
 
         $postfields = (array_keys($_POST));

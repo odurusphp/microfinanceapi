@@ -12,77 +12,77 @@ class Loandata extends  tableDataObject
     const TABLENAME  = 'loans';
 
     public static function getLoanByCustomerID($bid){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT *  from loans where bid = $bid  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->singleRecord();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->singleRecord();
     }
 
     public static function getAllActiveLoan(){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT *  from loans where amount > 0  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->resultSet();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->resultSet();
     }
 
     public static function getLoanByAccoountNumber($accountnumber){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT *  from loans where accountnumber = '$accountnumber'  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->resultSet();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->resultSet();
     }
 
     public static function getLoanSingleByAccoountNumber($accountnumber){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT *  from loans where accountnumber = '$accountnumber'  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->singleRecord();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->singleRecord();
     }
 
     public static function getLoanSingleByAccoountNumberWithStatus($accountnumber){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT *  from loans where accountnumber = '$accountnumber' and status = 1  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->singleRecord();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->singleRecord();
     }
 
     public static function getLoanCountByAccoountNumber($accountnumber){
-        global $fdadb;
-        $getdata = "SELECT *  from loans where accountnumber = '$accountnumber'  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->resultSet();
+        global $connectedDb;
+        $getdata = "SELECT  *  from loans where accountnumber = '$accountnumber'  ";
+        $connectedDb->prepare($getdata);
+        return $connectedDb->resultSet();
     }
 
 
     public static function getLoanPayments(){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT SUM(payments.amount) AS amt  FROM accounts INNER JOIN payments
                     ON accounts.accountnumber = payments.accountnumber
                     WHERE accounts.accounttype = 'Loan Account'  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->fetchColumn();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->fetchColumn();
     }
 
 
     public static function gettotalLoans(){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT sum(amount) as amt  from loans   ";
-        $fdadb->prepare($getdata);
-        return $fdadb->fetchColumn();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->fetchColumn();
     }
 
     public static function gettotalLoansByAccountNumber($accountnumber){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT sum(amount) as amt  from loans where accountnumber = '$accountnumber'   ";
-        $fdadb->prepare($getdata);
-        return $fdadb->fetchColumn();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->fetchColumn();
     }
 
     public static function getmaxloan($accountnumber){
-        global $fdadb;
+        global $connectedDb;
         $getdata = "SELECT max(loanid) as loanid  from loans where accountnumber = '$accountnumber'  and status = 1  ";
-        $fdadb->prepare($getdata);
-        return $fdadb->fetchColumn();
+        $connectedDb->prepare($getdata);
+        return $connectedDb->fetchColumn();
     }
 
 
