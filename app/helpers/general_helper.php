@@ -137,6 +137,18 @@ function textsms($telephone, $amount){
     $ap->sendsms($jdata);
 }
 
+function textazubi($telephone){
+    $mestelephone = '233'.$telephone;
+    $message = 'Hello Azubi Prospect, your online interview is on Tuesday 2nd June.';
+    //Check your inbox or spam for the invitation mail. Kindly send a mail to adea.natchiah-blay@azubiafrica.org or gideon.sackey@azubiafrica.org if you have not received any mail. Thank you.';
+    //Check your inbox or spam for the invitation mail. Kindly send a mail to adea.natchiah-blay@azubiafrica.org or gideon.sackey@azubiafrica.org if you have not received any mail. Thank you.';
+    $data = ['body'=>$message, 'to'=>$mestelephone, 'from'=>'GIBT'];
+    $jdata = json_encode($data);
+    $ap = new Api();
+    $ap->sendsms($jdata);
+
+}
+
 function textsmsowner($amount, $name, $telephone= '0549743710'){
 
     $altelephone = substr($telephone, 1);
