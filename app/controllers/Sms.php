@@ -9,7 +9,7 @@ class Sms extends Controller
          //$sm =  Smslog::getPendingLog();
 //         $smid = $sm->smsid;
 //         $telephone = $sm->telephone;
-         $telephone = '265742649';
+         $telephone = '209155165';
           textazubi($telephone);
      }
 
