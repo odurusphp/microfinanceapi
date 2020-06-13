@@ -139,7 +139,7 @@ function textsms($telephone, $amount){
 
 function textazubi($telephone){
    // $mestelephone = '233'.$telephone;
-    $message = 'Hello Azubi Prospect, Congratulations on being accepted into the Azubi Africa Graduate Programme. Kindly check your inbox or spam to sign and upload your offer letter before 8th June 2020.Thank you';
+    $message = 'Hello Azubi Prospect. Your signed offer letter is confirmed. Our Kick-Off is on Monday 15th June; 9:30am – 12pm. Call details will be shared via e-mail. Welcome Aboard!';
     //Check your inbox or spam for the invitation mail. Kindly send a mail to adea.natchiah-blay@azubiafrica.org or gideon.sackey@azubiafrica.org if you have not received any mail. Thank you.';
     $data = ['body'=>$message, 'to'=>$telephone, 'from'=>'GIBT'];
     $jdata = json_encode($data);
