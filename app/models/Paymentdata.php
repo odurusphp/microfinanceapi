@@ -18,5 +18,22 @@ class Paymentdata extends tableDataObject
         return  $connectedDb->resultSet();
     }
 
+    public static function getAllpaymnets(){
+        global $connectedDb;
+        $today = date('Y-m-d');
+        $query = "select *  from payments inner join basicinformation on 
+                  payments.bid = basicinformation.bid where payments.dateofpayment = '$today'  ";
+        $connectedDb->prepare($query);
+        return  $connectedDb->resultSet();
+    }
+
+    public static function getTotalAllpaymnets(){
+        global $connectedDb;
+        $today = date('Y-m-d');
+        $query = "select total(amount) as total  from payments  where  payments.dateofpayment = '$today'  ";
+        $connectedDb->prepare($query);
+        return  $connectedDb->resultSet();
+    }
+
 
 }
