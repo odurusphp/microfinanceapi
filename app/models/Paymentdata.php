@@ -20,7 +20,7 @@ class Paymentdata extends tableDataObject
 
     public static function getAllpaymnets(){
         global $connectedDb;
-        $today = date('Y-m-d');
+        $today = '2020-01-13';
         $query = "select *  from payments inner join basicinformation on 
                   payments.bid = basicinformation.bid where payments.dateofpayment = '$today'  ";
         $connectedDb->prepare($query);
@@ -29,10 +29,10 @@ class Paymentdata extends tableDataObject
 
     public static function getTotalAllpaymnets(){
         global $connectedDb;
-        $today = date('Y-m-d');
-        $query = "select total(amount) as total  from payments  where  payments.dateofpayment = '$today'  ";
+        $today = '2020-01-13';
+        $query = "SELECT SUM(amount) AS total  FROM payments  WHERE  payments.dateofpayment = '$today' ";
         $connectedDb->prepare($query);
-        return  $connectedDb->resultSet();
+        return  $connectedDb->fetchColumn();
     }
 
 
